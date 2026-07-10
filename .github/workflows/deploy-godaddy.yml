@@ -1,0 +1,87 @@
+name: Deploy to GoDaddy (setuai.com)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      clean_slate:
+        description: "Delete all files in public_html before deploy (first-time full replace)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+concurrency:
+  group: deploy-setuai-com
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate PHP config from secrets
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
+          SITE_NAME: SETU
+          CONTACT_DAILY_LIMIT: ${{ secrets.CONTACT_DAILY_LIMIT }}
+          ALLOWED_ORIGINS: https://setuai.com,https://www.setuai.com
+        run: node scripts/generate-config-php.mjs
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Copy config.php into dist
+        run: |
+          if [ -f public/api/config.php ]; then
+            cp public/api/config.php dist/api/config.php
+          else
+            echo "ERROR: config.php missing — add SMTP_PASS secret"
+            exit 1
+          fi
+
+      - name: Deploy to GoDaddy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            DEPLOY-CHECKLIST.txt
+          log-level: minimal
+
+      - name: Deployment summary
+        run: |
+          echo "Deployed to https://setuai.com"
+          echo "Health check: https://setuai.com/api/health"

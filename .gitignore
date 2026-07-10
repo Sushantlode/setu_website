@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Logs
+*.log
+
+# Environment & secrets — NEVER commit
+.env
+.env.*
+!.env.example
+!.env.production.example
+public/api/config.php
+public/api/data/usage_*.json
+
+# Large videos (upload via FTP / CI excludes from git)
+public/videos/setu-story.mp4
+public/videos/setu-story-web.mp4
+
+# OS / editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea

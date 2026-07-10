@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-07-08T10:51:39.183Z",
+  "images": [
+    {
+      "source": "https://www.setuai.com/assets/img/w1.jpg",
+      "output": "/assets/enhanced/projects/sundargarh-eswasthya.webp",
+      "width": 1920,
+      "height": 1064,
+      "bytes": 234788
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/w2.jpg",
+      "output": "/assets/enhanced/projects/matrujyoti.webp",
+      "width": 1920,
+      "height": 1276,
+      "bytes": 300762
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/w3.jpg",
+      "output": "/assets/enhanced/projects/nalanda-preventive.webp",
+      "width": 1920,
+      "height": 1234,
+      "bytes": 326416
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/o9.jpg",
+      "output": "/assets/enhanced/projects/khatima-checkups.webp",
+      "width": 1920,
+      "height": 878,
+      "bytes": 201662
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/r3.jpg",
+      "output": "/assets/enhanced/projects/pune-pmc-pilot.webp",
+      "width": 1920,
+      "height": 1105,
+      "bytes": 176042
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/portfolio/portfolio-4.webp",
+      "output": "/assets/enhanced/projects/portfolio-4.webp",
+      "width": 1920,
+      "height": 1281,
+      "bytes": 150540
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/fg.jpeg",
+      "output": "/assets/enhanced/general/hero-fg.webp",
+      "width": 1920,
+      "height": 1920,
+      "bytes": 323168
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/WhatsApp%20Image%202025-12-09%20at%202.06.26%20AM.jpeg",
+      "output": "/assets/enhanced/general/about-team.webp",
+      "width": 1400,
+      "height": 1310,
+      "bytes": 236200
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/oiu.jpg",
+      "output": "/assets/enhanced/general/services-oiu.webp",
+      "width": 1920,
+      "height": 1151,
+      "bytes": 231122
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/Setu%20logo.png",
+      "output": "/assets/enhanced/branding/setu-logo.webp",
+      "width": 370,
+      "height": 172,
+      "bytes": 39760
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/telemedicine-1.jpeg",
+      "output": "/assets/enhanced/services/telemedicine-1.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 199332
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/telemedicine-2.jpeg",
+      "output": "/assets/enhanced/services/telemedicine-2.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 139814
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/telemedicine-3.jpeg",
+      "output": "/assets/enhanced/services/telemedicine-3.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 123998
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/matru1.jpeg",
+      "output": "/assets/enhanced/services/mother-child-matru1.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 218274
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/matru2.jpeg",
+      "output": "/assets/enhanced/services/mother-child-matru2.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 306910
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/child1.jpeg",
+      "output": "/assets/enhanced/services/mother-child-child1.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 166810
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/child2.jpeg",
+      "output": "/assets/enhanced/services/mother-child-child2.webp",
+      "width": 1600,
+      "height": 3464,
+      "bytes": 246538
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/setu-wind.jpeg",
+      "output": "/assets/enhanced/services/setu-wind.webp",
+      "width": 1600,
+      "height": 1030,
+      "bytes": 227988
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/setu-wind-alt.jpeg",
+      "output": "/assets/enhanced/services/setu-wind-alt.webp",
+      "width": 1600,
+      "height": 863,
+      "bytes": 181294
+    },
+    {
+      "source": "https://www.setuai.com/assets/img/setu-air.jpg",
+      "output": "/assets/enhanced/services/setu-air.webp",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 368354
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/setu-air-wall.jpeg",
+      "output": "/assets/enhanced/services/setu-air-wall.webp",
+      "width": 1600,
+      "height": 1148,
+      "bytes": 145406
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/preventive-ehealth-center.png",
+      "output": "/assets/enhanced/services/preventive-ehealth-center.webp",
+      "width": 1736,
+      "height": 957,
+      "bytes": 284204
+    },
+    {
+      "source": "fallback:/Users/apple/SETU/setu_website/public/assets/scraped/services/preventive-health-kit.png",
+      "output": "/assets/enhanced/services/preventive-health-kit.webp",
+      "width": 1600,
+      "height": 1270,
+      "bytes": 189764
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+
+  /* Warm neutrals + soft slate (eye-friendly, low saturation) */
+  --color-setu-cream: #faf9f7;
+  --color-setu-sand: #f3f0eb;
+  --color-setu-stone: #ddd5cb;
+  --color-setu-muted: #7a7268;
+  --color-setu-charcoal: #2a2826;
+
+  /* Muted slate-blue — replaces bright/forest green */
+  --color-setu-teal: #6b7f8f;
+  --color-setu-teal-dark: #556674;
+  --color-setu-teal-deep: #3f4a54;
+  --color-setu-teal-light: #eef1f4;
+  --color-setu-teal-mist: #d4dde4;
+
+  --color-setu-coral: #e5b887;
+  --color-setu-coral-dark: #c4956a;
+  --color-setu-coral-light: #faf3eb;
+  --color-setu-beige: #e8c9a8;
+
+  --ease-vantara: cubic-bezier(0.15, 0, 0.12, 1);
+  --duration-fast: 125ms;
+  --duration-normal: 250ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  color: var(--color-setu-charcoal);
+  background: var(--color-setu-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-setu-teal-dark) 18%, transparent);
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  color: color-mix(in srgb, var(--color-setu-sand) 88%, transparent);
+  text-transform: capitalize;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) linear,
+    border-color var(--duration-normal) var(--ease-vantara),
+    background-color var(--duration-normal) var(--ease-vantara);
+}
+
+@media (hover: hover) {
+  .nav-link:hover {
+    color: var(--color-setu-beige);
+    border-color: var(--color-setu-coral);
+    background-color: color-mix(in srgb, var(--color-setu-coral) 8%, transparent);
+  }
+}
+
+.nav-link-active {
+  color: var(--color-setu-beige);
+  border-color: color-mix(in srgb, var(--color-setu-coral) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-setu-coral) 10%, transparent);
+}
+
+.nav-auth-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-setu-sand) 88%, transparent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color var(--duration-fast) linear,
+    border-color var(--duration-normal) var(--ease-vantara),
+    background-color var(--duration-normal) var(--ease-vantara);
+}
+
+@media (hover: hover) {
+  .nav-auth-link:hover {
+    color: var(--color-setu-beige);
+    border-color: var(--color-setu-coral);
+    background-color: color-mix(in srgb, var(--color-setu-coral) 12%, transparent);
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color var(--duration-normal) var(--ease-vantara),
+    color var(--duration-normal) var(--ease-vantara),
+    transform var(--duration-normal) var(--ease-vantara),
+    border-color var(--duration-normal) var(--ease-vantara);
+}
+
+.btn-primary-white {
+  background: var(--color-setu-cream);
+  color: var(--color-setu-teal-deep);
+  border: 1px solid transparent;
+}
+
+@media (hover: hover) {
+  .btn-primary-white:hover {
+    background: var(--color-setu-sand);
+    border-color: var(--color-setu-coral);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-primary-green {
+  background: var(--color-setu-teal-dark);
+  color: var(--color-setu-cream);
+}
+
+@media (hover: hover) {
+  .btn-primary-green:hover {
+    background: var(--color-setu-teal-deep);
+  }
+}
+
+.btn-outline-light {
+  border: 1px solid color-mix(in srgb, var(--color-setu-cream) 30%, transparent);
+  background: color-mix(in srgb, var(--color-setu-cream) 10%, transparent);
+  color: var(--color-setu-cream);
+  backdrop-filter: blur(8px);
+}
+
+@media (hover: hover) {
+  .btn-outline-light:hover {
+    background: color-mix(in srgb, var(--color-setu-cream) 20%, transparent);
+    border-color: var(--color-setu-coral);
+  }
+}
+
+.hover-border-beige {
+  border: 1px solid transparent;
+  transition:
+    border-color var(--duration-normal) var(--ease-vantara),
+    box-shadow var(--duration-normal) var(--ease-vantara);
+}
+
+@media (hover: hover) {
+  .hover-border-beige:hover {
+    border-color: var(--color-setu-coral);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-setu-coral) 25%, transparent);
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-setu-stone) 45%, transparent) 0%,
+    color-mix(in srgb, var(--color-setu-sand) 95%, transparent) 50%,
+    color-mix(in srgb, var(--color-setu-stone) 45%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-shimmer-dark {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-setu-cream) 8%, transparent) 0%,
+    color-mix(in srgb, var(--color-setu-cream) 18%, transparent) 50%,
+    color-mix(in srgb, var(--color-setu-cream) 8%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}

@@ -1,0 +1,12 @@
+# Protect config and rate-limit data
+<Files "config.php">
+  Require all denied
+</Files>
+
+<Files "lib.php">
+  Require all denied
+</Files>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine Off
+</IfModule>

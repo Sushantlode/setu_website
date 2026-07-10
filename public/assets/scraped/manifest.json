@@ -1,0 +1,27 @@
+{
+  "source": "https://www.setuai.com",
+  "scrapedAt": "2026-07-08",
+  "totalFiles": 33,
+  "categories": {
+    "branding": ["setu-logo.png", "favicon.png", "apple-touch-icon.png"],
+    "projects": [
+      "sundargarh-eswasthya.jpg",
+      "matrujyoti.jpg",
+      "nalanda-preventive.jpg",
+      "khatima-checkups.jpg",
+      "pune-pmc-pilot.jpg",
+      "portfolio-4.webp"
+    ],
+    "general": ["hero-fg.jpeg", "services-oiu.jpg", "about-team.jpeg"],
+    "services": {
+      "preventive": ["preventive-ehealth-center.png", "preventive-health-kit.png"],
+      "telemedicine": ["telemedicine-1.jpeg", "telemedicine-2.jpeg", "telemedicine-3.jpeg"],
+      "motherChild": ["mother-child-matru1.jpeg", "mother-child-matru2.jpeg", "mother-child-child1.jpeg", "mother-child-child2.jpeg"],
+      "devices": ["setu-wind.jpeg", "setu-wind-alt.jpeg", "setu-air.jpg", "setu-air-wall.jpeg"]
+    },
+    "person": [
+      "person-f-10.webp", "person-f-12.webp", "person-f-3.webp", "person-f-6.webp",
+      "person-f-8.webp", "person-m-12.webp", "person-m-7.webp", "person-m-8.webp"
+    ]
+  }
+}

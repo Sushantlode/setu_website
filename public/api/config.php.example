@@ -1,0 +1,21 @@
+<?php
+/**
+ * Copy this file to config.php on the server and fill in your SMTP password.
+ * config.php is blocked from web access via .htaccess.
+ */
+return [
+    "smtp_host" => "setuai.com",
+    "smtp_port" => 465,
+    "smtp_secure" => true,
+    "smtp_user" => "no_reply@setuai.com",
+    "smtp_pass" => "YOUR_SMTP_PASSWORD_HERE",
+    "smtp_from" => "Setu <no_reply@setuai.com>",
+    "contact_to" => "support@setuai.com",
+    "site_name" => "SETU",
+    "daily_limit" => 3,
+    "allowed_origins" => [
+        "https://setuai.com",
+        "https://www.setuai.com",
+    ],
+    "send_user_confirmation" => false,
+];
