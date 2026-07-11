@@ -2,13 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-const STAGING = 'https://staging.setuai.com'
+const API_HOST = 'https://api.setuai.com'
 
-/** Proxy SETU service prefixes to staging (mirrors RN .env bases). */
+/** Proxy SETU service prefixes to the API host (mirrors RN .env bases). */
 function stagingProxy(pathPrefix) {
   return {
     [pathPrefix]: {
-      target: STAGING,
+      target: API_HOST,
       changeOrigin: true,
       secure: true,
     },
