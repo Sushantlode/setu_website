@@ -1,6 +1,7 @@
 import { useEffect } from "react"
+import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Construction } from "lucide-react"
+import { X, LogIn, UserPlus } from "lucide-react"
 
 export default function AuthModal({ open, onClose, mode = "login" }) {
   const isLogin = mode === "login"
@@ -51,42 +52,38 @@ export default function AuthModal({ open, onClose, mode = "login" }) {
             </button>
 
             <div className="px-6 pb-8 pt-10 text-center sm:px-8 sm:pb-10 sm:pt-12">
-              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-setu-teal-light text-setu-teal-dark">
-                <Construction size={28} />
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EEF3FF] text-[#1C39BB]">
+                {isLogin ? <LogIn size={28} /> : <UserPlus size={28} />}
               </span>
 
               <h2
                 id="auth-modal-title"
                 className="mt-5 font-serif text-2xl text-setu-charcoal sm:text-3xl"
               >
-                {isLogin ? "Login" : "Register"}
+                {isLogin ? "Sign in to SETU" : "Join SETU"}
               </h2>
-
-              <p className="mt-2 text-sm font-medium uppercase tracking-[0.15em] text-setu-coral-dark">
-                Work in progress
-              </p>
 
               <p className="mt-4 text-sm leading-relaxed text-setu-muted sm:text-base">
                 {isLogin
-                  ? "The SETU web login is coming soon. Download the SETU app to access your account today."
-                  : "Online registration is on the way. Join SETU through the mobile app while we finish this feature."}
+                  ? "Use the same mobile number and OTP as the SETU app to open your web dashboard."
+                  : "Create your account with OTP verification, then explore SETU modules on the web."}
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Link
+                  to={isLogin ? "/login" : "/register"}
+                  onClick={onClose}
+                  className="btn-primary btn-primary-dark"
+                >
+                  {isLogin ? "Continue to login" : "Create account"}
+                </Link>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="btn-primary btn-primary-green"
-                >
-                  Got it
-                </button>
-                <a
-                  href="#contact"
                   className="btn-primary border border-setu-stone/30 bg-white px-5 py-2.5 text-sm text-setu-charcoal hover:border-setu-coral"
-                  onClick={onClose}
                 >
-                  Contact us
-                </a>
+                  Cancel
+                </button>
               </div>
             </div>
           </motion.div>

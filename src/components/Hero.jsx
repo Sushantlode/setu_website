@@ -9,7 +9,6 @@ export default function Hero({ onWatchStory }) {
   const videoRef = useRef(null)
   const [playing, setPlaying] = useState(true)
   const [storyOpen, setStoryOpen] = useState(false)
-  const [videoReady, setVideoReady] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
@@ -49,36 +48,20 @@ export default function Hero({ onWatchStory }) {
     onWatchStory?.()
   }
 
-  const handleVideoReady = () => {
-    setVideoReady(true)
-  }
-
   return (
     <>
       <section className="relative z-0 flex h-svh min-h-svh items-end overflow-hidden">
         <div className="absolute inset-0 bg-setu-teal-deep">
-          <img
-            src={assets.heroFallback}
-            alt=""
-            aria-hidden="true"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-              videoReady ? "opacity-0" : "opacity-100"
-            }`}
-          />
-
+          {/* Solid teal holds the frame — no fallback still image (avoids flicker). */}
           <video
             ref={videoRef}
-            className={`absolute inset-0 z-[2] h-full w-full object-cover transition-opacity duration-700 ${
-              videoReady ? "opacity-100" : "opacity-0"
-            }`}
+            className="absolute inset-0 z-[2] h-full w-full object-cover"
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
             aria-hidden="true"
-            onLoadedData={handleVideoReady}
-            onCanPlay={handleVideoReady}
           >
             <source src={assets.heroVideo} type="video/mp4" />
           </video>

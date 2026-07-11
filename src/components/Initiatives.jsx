@@ -1,12 +1,15 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 import { appModules } from "../data/content"
 import FadeIn from "./FadeIn"
+import { useAuth } from "../context/AuthContext"
 
 export default function Initiatives() {
   const [active, setActive] = useState(0)
   const current = appModules[active]
+  const { isAuthenticated } = useAuth()
 
   return (
     <section id="services" className="pb-16 sm:pb-24 lg:pb-32">
@@ -131,16 +134,16 @@ export default function Initiatives() {
                       </ul>
                     )}
 
-                    <a
-                      href="#contact"
+                    <Link
+                      to={isAuthenticated ? `/app/${current.id}` : "/login"}
                       className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-setu-teal-dark transition-colors hover:text-setu-coral-dark"
                     >
-                      Get started with SETU
+                      {isAuthenticated ? "Open module" : "Sign in to use SETU app"}
                       <ArrowRight
                         size={16}
                         className="transition-transform group-hover:translate-x-1"
                       />
-                    </a>
+                    </Link>
                   </div>
                 </motion.div>
               </AnimatePresence>

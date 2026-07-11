@@ -1,0 +1,101 @@
+import { useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { ArrowLeft, Loader2 } from "lucide-react"
+import { assets } from "../data/content"
+
+export default function RegisterProfilePage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { mobile, mobileAlreadyVerified } = location.state || {}
+
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  if (!mobile) {
+    return (
+      <div className="flex min-h-svh items-center justify-center bg-setu-cream px-4">
+        <div className="text-center">
+          <p className="text-setu-muted">Start registration with your mobile number first.</p>
+          <Link to="/register" className="mt-4 inline-block text-setu-teal hover:underline">
+            Go to register
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!firstName.trim() || !lastName.trim()) return
+
+    setLoading(true)
+    navigate("/register/complete", {
+      state: {
+        mobile,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        mobileAlreadyVerified: Boolean(mobileAlreadyVerified),
+      },
+    })
+  }
+
+  return (
+    <div className="min-h-svh bg-[#F7FAFF]">
+      <div className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-4 py-10">
+        <Link
+          to="/register"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-setu-muted transition-colors hover:text-setu-charcoal"
+        >
+          <ArrowLeft size={16} />
+          Back
+        </Link>
+
+        <div className="overflow-hidden rounded-[1.75rem] border border-[#D2DEFF] bg-white shadow-sm">
+          <div className="bg-[#1C39BB] px-6 py-6 text-white sm:px-8">
+            <img
+              src={assets.logo}
+              alt="SETU"
+              className="mb-4 h-9 w-auto brightness-0 invert"
+            />
+            <h1 className="font-serif text-2xl sm:text-3xl">Hey there!</h1>
+            <p className="mt-1 text-sm text-white/80">
+              {mobileAlreadyVerified
+                ? "Your mobile is verified. Tell us your name to continue."
+                : "We need a few details to get you started."}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 p-6 sm:p-8">
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-setu-charcoal">First name</span>
+              <input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full rounded-xl border border-[#D2DEFF] px-3 py-3 outline-none focus:border-[#1C39BB]"
+                autoComplete="given-name"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-setu-charcoal">Last name</span>
+              <input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full rounded-xl border border-[#D2DEFF] px-3 py-3 outline-none focus:border-[#1C39BB]"
+                autoComplete="family-name"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={loading || !firstName.trim() || !lastName.trim()}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1C39BB] px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-95 disabled:opacity-60"
+            >
+              {loading && <Loader2 size={16} className="animate-spin" />}
+              Continue
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}

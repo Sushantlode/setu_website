@@ -142,14 +142,29 @@ body {
   }
 }
 
+.btn-primary-dark,
 .btn-primary-green {
   background: var(--color-setu-teal-dark);
   color: var(--color-setu-cream);
 }
 
 @media (hover: hover) {
-  .btn-primary-green:hover {
+  .btn-primary-green:hover,
+  .btn-primary-dark:hover {
     background: var(--color-setu-teal-deep);
+  }
+}
+
+.btn-outline-dark {
+  background: transparent;
+  color: var(--color-setu-charcoal);
+  border: 1px solid color-mix(in srgb, var(--color-setu-stone) 50%, transparent);
+}
+
+@media (hover: hover) {
+  .btn-outline-dark:hover {
+    background: var(--color-setu-sand);
+    border-color: var(--color-setu-teal);
   }
 }
 
@@ -207,6 +222,19 @@ body {
     color-mix(in srgb, var(--color-setu-cream) 8%, transparent) 0%,
     color-mix(in srgb, var(--color-setu-cream) 18%, transparent) 50%,
     color-mix(in srgb, var(--color-setu-cream) 8%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* App shell — soft teal/sand shimmer (brand tokens) */
+.skeleton-shimmer-app {
+  background: linear-gradient(
+    90deg,
+    var(--color-setu-teal-light) 0%,
+    var(--color-setu-teal-mist) 45%,
+    var(--color-setu-sand) 55%,
+    var(--color-setu-teal-light) 100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;

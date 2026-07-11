@@ -84,17 +84,32 @@ export const impactStats = [
 ]
 
 const DASHBOARD = "/assets/dashboard"
+const WELCOME = "/assets/welcome"
 
-/** Modules shown on the SETU app home grid (HomeScreen.js STATIC_HOME_ICONS) */
+/**
+ * Modules shown on the SETU app home grid (HomeScreen.js STATIC_HOME_ICONS).
+ * welcome* fields mirror RN WelcomeHeroScreen screens.
+ */
 export const appModules = [
   {
     id: "telemedicine",
     appId: 2,
     title: "Telemedicine",
+    welcomeTitle: "Doctors",
     tagline: "Consult doctors online, anywhere",
+    welcomeSubtitle:
+      "This module lets you consult doctors online quickly and conveniently from anywhere, helping you get timely medical advice without visiting a clinic.",
     description:
       "Connect with qualified doctors for online consultations, prescriptions, and follow-ups. Book appointments by city, access emergency doctors, and get timely medical advice without visiting a clinic.",
     icon: `${DASHBOARD}/Appointment.png`,
+    heroImage: `${WELCOME}/telemedicine.png`,
+    accent: "#1C39BB",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Find doctors", hint: "Browse by city and specialty" },
+      { label: "Book appointment", hint: "Schedule a video consult" },
+      { label: "Emergency doctor", hint: "Urgent care when you need it" },
+    ],
     highlights: [
       "Online doctor consultations with video support",
       "City-based doctor discovery and appointment booking",
@@ -110,10 +125,21 @@ export const appModules = [
     id: "book-tests",
     appId: 3,
     title: "Book Tests",
+    welcomeTitle: "Book test",
     tagline: "Trusted lab tests at your doorstep",
+    welcomeSubtitle:
+      "Compare and book lab tests easily in one place. Choose from trusted labs, schedule at your convenience, and get accurate reports on time.",
     description:
       "Compare and book diagnostic tests from certified labs via Thyrocare integration. Schedule home sample collection by pincode, choose health packages, and receive accurate digital reports on time.",
     icon: `${DASHBOARD}/Book_Test.png`,
+    heroImage: `${WELCOME}/booktest.png`,
+    accent: "#7C3AED",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Browse tests", hint: "Thyrocare catalog & packages" },
+      { label: "Home collection", hint: "Pick a slot by pincode" },
+      { label: "View reports", hint: "Digital results when ready" },
+    ],
     highlights: [
       "Thyrocare lab catalog with home sample collection",
       "Full-body checkup packages for men and women",
@@ -129,10 +155,21 @@ export const appModules = [
     id: "generic-medicine",
     appId: 15,
     title: "Generic Medicine",
+    welcomeTitle: "Generic medicine",
     tagline: "Affordable medicines, delivered fast",
+    welcomeSubtitle:
+      "Compare prices of branded and generic medicines in one place. Choose affordable alternatives and buy medicines at a lower cost.",
     description:
       "Compare branded and generic medicine prices to choose affordable alternatives. Upload prescriptions, order from nearby pharmacies with delivery in 24 hours, and find Jan Aushadhi stores near you.",
     icon: `${DASHBOARD}/Generic_Medicine.png`,
+    heroImage: `${WELCOME}/genericmed.png`,
+    accent: "#14B8A6",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Compare prices", hint: "Branded vs generic savings" },
+      { label: "Upload prescription", hint: "Order from nearby pharmacies" },
+      { label: "Jan Aushadhi", hint: "Find stores near you" },
+    ],
     highlights: [
       "Branded vs generic price comparison — save up to ₹3,000/year",
       "Prescription upload and express pharmacy delivery",
@@ -148,10 +185,21 @@ export const appModules = [
     id: "mental-health",
     appId: 23,
     title: "Mental Health",
+    welcomeTitle: "Mental health",
     tagline: "Understand and improve emotional wellness",
+    welcomeSubtitle:
+      "Assess your emotional well-being with guided self-checks, track mood patterns, and connect with wellness support when you need it.",
     description:
       "Assess mental well-being with guided self-check tests and scored results. Book a stress quantification device for at-home technician-assisted screening, or connect with a mental wellness specialist.",
     icon: `${DASHBOARD}/Mental_Health.png`,
+    heroImage: `${WELCOME}/mentalhealth.png`,
+    accent: "#8B5CF6",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Self assessment", hint: "Guided questionnaires" },
+      { label: "Book device", hint: "Stress quantification at home" },
+      { label: "Talk to specialist", hint: "Counselling sessions" },
+    ],
     highlights: [
       "Self-assessment questionnaires with history and insights",
       "Stress quantification device — non-invasive, real-time results",
@@ -167,10 +215,21 @@ export const appModules = [
     id: "govt-schemes",
     appId: 16,
     title: "Government Schemes",
+    welcomeTitle: "Government Schemes",
     tagline: "500+ health & welfare schemes",
+    welcomeSubtitle:
+      "Explore various government schemes and benefits. Find the right programs based on your eligibility and needs.",
     description:
       "Explore central and state government health schemes in one place. Use the eligibility wizard to find programs based on your demographics, income, caste, disability, and residence — powered by MyScheme.gov.in.",
     icon: `${DASHBOARD}/Govt_Schemes.png`,
+    heroImage: `${WELCOME}/govescheme.png`,
+    accent: "#1F4B99",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Browse schemes", hint: "500+ central & state programs" },
+      { label: "Check eligibility", hint: "Personalized wizard" },
+      { label: "Saved schemes", hint: "Track interest applications" },
+    ],
     highlights: [
       "500+ central and state schemes accessible",
       "Personalized eligibility search from your profile",
@@ -186,10 +245,21 @@ export const appModules = [
     id: "drug-directory",
     appId: 19,
     title: "Drug Directory",
+    welcomeTitle: "Drug directory",
     tagline: "Know your medicines, stay safe",
+    welcomeSubtitle:
+      "Find detailed information on medicines in one place. Check uses, dosage, and safety guidelines for better decisions.",
     description:
       "Search medicines by name, category, or symptoms. Access detailed drug information including uses, dosage, and safety guidelines. Includes Ayurvedic medicines, pill identifier, side-effect analysis, and medication reminders.",
     icon: `${DASHBOARD}/Drug_Directory.png`,
+    heroImage: `${WELCOME}/drugdir.png`,
+    accent: "#1E3A8A",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Search medicines", hint: "A–Z drug index" },
+      { label: "Pill identifier", hint: "Match by shape & color" },
+      { label: "Reminders", hint: "Daily medication alerts" },
+    ],
     highlights: [
       "A–Z drug directory with categories and search",
       "Pill identifier and symptom checker",
@@ -205,10 +275,21 @@ export const appModules = [
     id: "agriculture",
     appId: 18,
     title: "Agriculture",
+    welcomeTitle: "Agriculture",
     tagline: "Smart farming guidance & support",
+    welcomeSubtitle:
+      "Get smart agricultural guidance, crop care tips, and farming support in one place. Access useful resources to improve productivity and make informed farming decisions.",
     description:
       "Agri-Connect brings crop care tips, soil test booking, weather insights, and farming products to rural communities. Mark fields, access agri knowledge articles, and connect with experts for inquiries.",
     icon: `${DASHBOARD}/Agri_Solutions.png`,
+    heroImage: `${WELCOME}/agriculture.png`,
+    accent: "#307E33",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Crop care", hint: "Tips and knowledge hub" },
+      { label: "Soil test", hint: "Book testing & guidance" },
+      { label: "Agri products", hint: "Marketplace & orders" },
+    ],
     highlights: [
       "Soil testing and crop rotation guidance",
       "Field mapping with weather and crop details",
@@ -224,10 +305,21 @@ export const appModules = [
     id: "abha",
     appId: 20,
     title: "ABHA",
+    welcomeTitle: "ABHA",
     tagline: "Your digital health identity",
+    welcomeSubtitle:
+      "Create or access your ABHA account to securely manage and review your digital health records anytime.",
     description:
       "Create or access your Ayushman Bharat Health Account (ABHA) to securely manage digital health records. Link facilities, share records with consent, discover health documents, and avail government benefits with one national health ID.",
     icon: `${DASHBOARD}/Aabha.png`,
+    heroImage: `${WELCOME}/abha1.png`,
+    accent: "#2F387E",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Create ABHA", hint: "Get your national health ID" },
+      { label: "Link records", hint: "Hospitals, labs & doctors" },
+      { label: "Share with consent", hint: "PHR-based access control" },
+    ],
     highlights: [
       "14-digit ABHA number with self-declared ABHA address",
       "Link records across hospitals, labs, and doctors",
@@ -243,10 +335,21 @@ export const appModules = [
     id: "fitness",
     appId: 7,
     title: "Fitness",
+    welcomeTitle: "Fitness",
     tagline: "Workouts, nutrition & dietitian care",
+    welcomeSubtitle:
+      "Track your health and stay active with personalized fitness insights, activity monitoring, and wellness tips.",
     description:
       "AI-assisted fitness with personalized workouts, meal plans, water intake tracking, and healthy recipes. Book dietitian consultations, sync with Google Fit, and track daily habits for preventive wellness.",
     icon: `${DASHBOARD}/Fitness.png`,
+    heroImage: `${WELCOME}/fitness.png`,
+    accent: "#10B981",
+    ctaLabel: "Get Started",
+    actions: [
+      { label: "Workouts", hint: "Personalized activity plans" },
+      { label: "Nutrition", hint: "Meals, recipes & water" },
+      { label: "Dietitian", hint: "Book a consultation" },
+    ],
     highlights: [
       "Workout plans and daily activity tracking",
       "Nutrition breakdown with meal and recipe guides",
@@ -258,6 +361,18 @@ export const appModules = [
       { value: "Fit", label: "Google Fit sync" },
     ],
   },
+]
+
+/** Report categories mirrored from RN ReportsHome tiles */
+export const reportTiles = [
+  { id: "view-reports", title: "View Reports", hint: "Lab & health documents" },
+  { id: "vital-signs", title: "Vital Signs", hint: "BP, SpO₂, pulse & more" },
+  { id: "medications", title: "Medications", hint: "Your medicine list" },
+  { id: "allergies", title: "Allergies", hint: "Track known allergies" },
+  { id: "immunization", title: "Immunization", hint: "Vaccination history" },
+  { id: "lifestyle", title: "Lifestyle", hint: "Habits & wellness notes" },
+  { id: "case-paper", title: "Case Paper", hint: "Clinical case notes" },
+  { id: "implants", title: "Implants", hint: "Biomedical implants" },
 ]
 
 /** @deprecated Use appModules — kept for backward compatibility */

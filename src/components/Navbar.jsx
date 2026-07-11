@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LayoutGrid } from "lucide-react"
 import { navLinksLeft, navLinksRight, assets } from "../data/content"
 import NavLink from "./NavLink"
-import AuthModal from "./AuthModal"
+import { useAuth } from "../context/AuthContext"
 
 const SCROLL_THRESHOLD = 56
 const SCROLL_END_DELAY = 550
@@ -27,8 +28,9 @@ const noTransition = { duration: 0 }
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [authModal, setAuthModal] = useState(null)
   const [compact, setCompact] = useState(false)
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const [scrollAnimationsEnabled, setScrollAnimationsEnabled] = useState(false)
   const [isNavigatingState, setIsNavigatingState] = useState(false)
   const scrollEndTimer = useRef(null)
@@ -37,9 +39,9 @@ export default function Navbar() {
   const mountReady = useRef(false)
   const prefersReducedMotion = useReducedMotion()
 
-  const openAuth = (mode) => {
-    setAuthModal(mode)
+  const openAuth = (path) => {
     setMobileOpen(false)
+    navigate(path)
   }
 
   const beginAnchorNavigation = () => {
@@ -160,8 +162,8 @@ export default function Navbar() {
         >
           <motion.a
             layout={scrollAnimationsEnabled ? "position" : false}
-            href="#"
-            onClick={() => handleAnchorClick("#")}
+            href="/"
+            onClick={() => handleAnchorClick("/")}
             className="relative z-10 flex shrink-0 items-center"
             transition={motionTransition}
           >
@@ -242,17 +244,27 @@ export default function Navbar() {
                 <button
                   type="button"
                   className="nav-link"
-                  onClick={() => openAuth("register")}
+                  onClick={() => openAuth("/register")}
                 >
                   Register
                 </button>
-                <button
-                  type="button"
-                  className="btn-primary btn-primary-white px-3.5 py-2 text-xs"
-                  onClick={() => openAuth("login")}
-                >
-                  Login
-                </button>
+                {isAuthenticated ? (
+                  <Link
+                    to="/app"
+                    className="btn-primary btn-primary-white inline-flex items-center gap-1.5 px-3.5 py-2 text-xs"
+                  >
+                    <LayoutGrid size={14} />
+                    App
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-primary btn-primary-white px-3.5 py-2 text-xs"
+                    onClick={() => openAuth("/login")}
+                  >
+                    Login
+                  </button>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -334,29 +346,30 @@ export default function Navbar() {
                   <button
                     type="button"
                     className="nav-link text-lg"
-                    onClick={() => openAuth("register")}
+                    onClick={() => openAuth("/register")}
                   >
                     Register
                   </button>
-                  <button
-                    type="button"
-                    className="btn-primary btn-primary-white"
-                    onClick={() => openAuth("login")}
-                  >
-                    Login
-                  </button>
+                  {isAuthenticated ? (
+                    <Link to="/app" className="btn-primary btn-primary-white inline-flex items-center gap-2">
+                      <LayoutGrid size={16} />
+                      Open App
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn-primary btn-primary-white"
+                      onClick={() => openAuth("/login")}
+                    >
+                      Login
+                    </button>
+                  )}
                 </motion.li>
               </motion.ul>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AuthModal
-        open={authModal !== null}
-        mode={authModal ?? "login"}
-        onClose={() => setAuthModal(null)}
-      />
     </>
   )
 }
