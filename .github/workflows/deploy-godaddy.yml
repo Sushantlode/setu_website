@@ -37,6 +37,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check required secrets
+        run: |
+          missing=0
+          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD SMTP_PASS; do
+            case "$name" in
+              FTP_SERVER) val="${{ secrets.FTP_SERVER }}" ;;
+              FTP_USERNAME) val="${{ secrets.FTP_USERNAME }}" ;;
+              FTP_PASSWORD) val="${{ secrets.FTP_PASSWORD }}" ;;
+              SMTP_PASS) val="${{ secrets.SMTP_PASS }}" ;;
+            esac
+            if [ -z "$val" ]; then
+              echo "::error::Missing GitHub secret: $name — add it under Settings → Secrets and variables → Actions"
+              missing=1
+            else
+              echo "OK: $name is set"
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            exit 1
+          fi
+
       - name: Generate PHP config from secrets
         env:
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
@@ -54,14 +75,13 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
-      - name: Copy config.php into dist
+      - name: Verify config.php in dist
         run: |
-          if [ -f public/api/config.php ]; then
-            cp public/api/config.php dist/api/config.php
-          else
-            echo "ERROR: config.php missing — add SMTP_PASS secret"
+          if [ ! -f dist/api/config.php ]; then
+            echo "::error::dist/api/config.php missing after build"
             exit 1
           fi
+          echo "OK: dist/api/config.php ready for deploy"
 
       - name: Deploy to GoDaddy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

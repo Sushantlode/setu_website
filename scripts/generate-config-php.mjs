@@ -24,8 +24,18 @@ function phpArray(items) {
 }
 
 const smtpPass = process.env.SMTP_PASS
+const isCi = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true"
+
 if (!smtpPass) {
-  console.log("SMTP_PASS not set — skipping config.php generation (use config.php.example on server).")
+  const message =
+    "SMTP_PASS is not set. Add it in GitHub: Settings → Secrets and variables → Actions → New repository secret → Name: SMTP_PASS"
+
+  if (isCi) {
+    console.error(`ERROR: ${message}`)
+    process.exit(1)
+  }
+
+  console.log(`${message} (skipping config.php for local build).`)
   process.exit(0)
 }
 
