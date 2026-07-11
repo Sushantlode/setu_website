@@ -90,6 +90,69 @@ export async function verifyRegistrationOtp(mobile, otp) {
   throw new Error(data.message || "Invalid OTP.")
 }
 
+/**
+ * Create account + session without payment — same as RN RegisterPlans
+ * `confirm-trial-no-payment` (no Razorpay / create-order / paid confirm).
+ */
+export async function completeRegistrationProfile({
+  mobile,
+  firstName,
+  lastName,
+}) {
+  const phoneNumber = String(mobile || "")
+    .replace(/\D/g, "")
+    .slice(-10)
+
+  const { response, data } = await parseJson(
+    await fetch(authUrl("/register/autopay-5/confirm-trial-no-payment"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phoneNumber,
+        firstName: String(firstName || "").trim(),
+        lastName: String(lastName || "").trim(),
+      }),
+    }),
+  )
+
+  const msg = String(data?.message || data?.data?.message || "").toLowerCase()
+  const alreadyExists =
+    data?.state === "USER_ALREADY_EXISTS" ||
+    msg.includes("already registered") ||
+    msg.includes("user already exists")
+
+  if (alreadyExists) {
+    const err = new Error(
+      data?.message || "This number is already registered. Please sign in.",
+    )
+    err.code = "USER_ALREADY_EXISTS"
+    throw err
+  }
+
+  const user = data?.user ?? data?.data?.user ?? null
+  const token = data?.token ?? data?.data?.token ?? ""
+  const refreshToken = data?.refreshToken ?? data?.data?.refreshToken ?? ""
+  const apiOk = response.ok && data?.success !== false && user && token
+  const stateOk =
+    data?.state == null ||
+    data?.state === "REGISTERED" ||
+    data?.state === "SUCCESS"
+
+  if (!apiOk || !stateOk) {
+    throw new Error(data?.message || "Registration failed. Please try again.")
+  }
+
+  return {
+    token,
+    refreshToken,
+    user_id: user.user_id != null ? String(user.user_id) : "",
+    uhid: user.uhid != null ? String(user.uhid) : "",
+    username: user.username ? String(user.username) : "",
+    first_name: user.first_name || firstName || "",
+    mobile: phoneNumber,
+  }
+}
+
 export async function loginWithOtp(mobile, otp) {
   const { response, data } = await parseJson(
     await fetch(authUrl("/loginWithSmartpingOtp"), {

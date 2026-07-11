@@ -2,15 +2,19 @@ import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { assets } from "../data/content"
+import { completeRegistrationProfile } from "../api/auth"
+import { useAuth } from "../context/AuthContext"
 
 export default function RegisterProfilePage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { login } = useAuth()
   const { mobile, mobileAlreadyVerified } = location.state || {}
 
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   if (!mobile) {
     return (
@@ -25,19 +29,32 @@ export default function RegisterProfilePage() {
     )
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!firstName.trim() || !lastName.trim()) return
 
+    setError("")
     setLoading(true)
-    navigate("/register/complete", {
-      state: {
+    try {
+      const session = await completeRegistrationProfile({
         mobile,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        mobileAlreadyVerified: Boolean(mobileAlreadyVerified),
-      },
-    })
+      })
+      login(session)
+      navigate("/app", { replace: true })
+    } catch (err) {
+      if (err?.code === "USER_ALREADY_EXISTS") {
+        navigate("/login", {
+          replace: true,
+          state: { from: "/app", notice: err.message },
+        })
+        return
+      }
+      setError(err.message || "Could not complete registration.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -85,13 +102,16 @@ export default function RegisterProfilePage() {
                 autoComplete="family-name"
               />
             </label>
+
+            {error && <p className="text-sm text-red-600">{error}</p>}
+
             <button
               type="submit"
               disabled={loading || !firstName.trim() || !lastName.trim()}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1C39BB] px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-95 disabled:opacity-60"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
-              Continue
+              Continue to SETU
             </button>
           </form>
         </div>

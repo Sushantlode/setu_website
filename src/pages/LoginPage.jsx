@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [receiveUpdates, setReceiveUpdates] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const notice = location.state?.notice || ""
 
   const redirectTo = location.state?.from || "/app"
 
@@ -147,6 +148,9 @@ export default function LoginPage() {
                 <span>Receive health updates and SETU program notifications</span>
               </label>
 
+              {notice && !error && (
+                <p className="text-sm text-[#1C39BB]">{notice}</p>
+              )}
               {error && <p className="text-sm text-red-600">{error}</p>}
 
               <button
@@ -210,7 +214,7 @@ export default function LoginPage() {
               <Smartphone className="mt-0.5 shrink-0 text-[#1C39BB]" size={18} />
               <p className="text-sm leading-relaxed text-setu-muted">
                 {isRegister
-                  ? "New users complete profile setup on web, then access all SETU modules. Full payment flows remain in the mobile app for now."
+                  ? "Verify your mobile, add your name, and you get immediate access to the SETU web app."
                   : "Existing SETU app users can sign in with the same mobile number and OTP."}
               </p>
             </div>
