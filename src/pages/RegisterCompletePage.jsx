@@ -1,25 +1,36 @@
 import { Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { AppBootSkeleton } from "../components/AppSkeleton"
 
 /**
- * Legacy route — registration now finishes on /register/profile and goes to /app.
- * Keep this path so old bookmarks/deep links do not dead-end on payment messaging.
+ * Legacy route — registration finishes on /register/profile → /app.
+ * Never render pay-in-app / "finish registration" copy here.
  */
 export default function RegisterCompletePage() {
   const location = useLocation()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loading } = useAuth()
   const { mobile, firstName } = location.state || {}
+
+  if (loading) {
+    return <AppBootSkeleton />
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/app" replace />
   }
 
-  if (mobile && firstName) {
+  // Old deep links / bookmarks may pass verified mobile (+ optional name).
+  // Send them to finish name + confirm-trial-no-payment, not a dead-end.
+  if (mobile) {
     return (
       <Navigate
         to="/register/profile"
         replace
-        state={{ mobile, mobileAlreadyVerified: true }}
+        state={{
+          mobile,
+          mobileAlreadyVerified: true,
+          ...(firstName ? { preferredFirstName: firstName } : {}),
+        }}
       />
     )
   }

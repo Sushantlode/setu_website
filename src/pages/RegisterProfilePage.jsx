@@ -9,9 +9,11 @@ export default function RegisterProfilePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useAuth()
-  const { mobile, mobileAlreadyVerified } = location.state || {}
+  const { mobile, mobileAlreadyVerified, preferredFirstName } = location.state || {}
 
-  const [firstName, setFirstName] = useState("")
+  const [firstName, setFirstName] = useState(
+    () => (preferredFirstName ? String(preferredFirstName) : ""),
+  )
   const [lastName, setLastName] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -42,6 +44,7 @@ export default function RegisterProfilePage() {
         lastName: lastName.trim(),
       })
       login(session)
+      // Session is live — go straight into the web app. Never /register/complete.
       navigate("/app", { replace: true })
     } catch (err) {
       if (err?.code === "USER_ALREADY_EXISTS") {
@@ -51,7 +54,10 @@ export default function RegisterProfilePage() {
         })
         return
       }
-      setError(err.message || "Could not complete registration.")
+      setError(
+        err.message ||
+          "Could not complete registration. Check your connection and try again.",
+      )
     } finally {
       setLoading(false)
     }

@@ -36,6 +36,19 @@
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Never cache the SPA shell — hashed /assets/* stay long-lived via Expires.
+  # Caching HTML left post-deploy browsers on old JS (pay-in-app complete page)
+  # for up to an hour.
+  <FilesMatch "\.(html?)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+
+  # SPA fallbacks rewrite to index.html but keep path like /register/complete —
+  # match by content type so those responses are also uncached.
+  Header set Cache-Control "no-cache, no-store, must-revalidate" "expr=%{CONTENT_TYPE} =~ m#^text/html#i"
 </IfModule>
 
 <IfModule mod_deflate.c>
@@ -51,5 +64,5 @@
   ExpiresByType video/mp4 "access plus 1 year"
   ExpiresByType text/css "access plus 1 month"
   ExpiresByType application/javascript "access plus 1 month"
-  ExpiresByType text/html "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
