@@ -90,16 +90,17 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          protocol: ftp
+          protocol: ftps
+          security: loose
           local-dir: ./dist/
-          server-dir: /public_html/
+          server-dir: ./public_html/
           dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             DEPLOY-CHECKLIST.txt
-          log-level: minimal
+          log-level: verbose
 
       - name: Deployment summary
         run: |
