@@ -1,7 +1,9 @@
 /**
  * Central API bases — mirrors setuReactNative/src/config/apiConfig.js for staging.
- * Local dev: leave VITE_API_URL empty and use relative paths proxied in vite.config.js.
- * Deployed: set VITE_API_URL=https://staging.setuai.com (or production host).
+ * Local dev: leave VITE_API_URL empty; vite.config.js proxies /auth, /dashboard, …
+ * GoDaddy prod: leave VITE_API_URL empty; public/.htaccess + api/staging-proxy.php
+ *   forward the same relative prefixes to https://staging.setuai.com (CORS-safe).
+ * Direct absolute staging URLs only work if staging CORS/CORP allow the site origin.
  */
 
 const trim = (url) => String(url || "").trim().replace(/\/+$/, "")

@@ -95,18 +95,35 @@ jobs:
           SITE_NAME: SETU
           CONTACT_DAILY_LIMIT: ${{ secrets.CONTACT_DAILY_LIMIT }}
           ALLOWED_ORIGINS: https://setuai.com,https://www.setuai.com
+          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
         run: node scripts/generate-config-php.mjs
 
       - name: Build production bundle
+        # Relative VITE_* bases (empty VITE_API_URL) — /auth etc. proxied by PHP on GoDaddy
         run: npm run build
+        env:
+          VITE_API_URL: ""
+          VITE_CONTACT_API_URL: ""
 
-      - name: Verify config.php in dist
+      - name: Verify config.php and API proxy in dist
         run: |
           if [ ! -f dist/api/config.php ]; then
             echo "::error::dist/api/config.php missing after build"
             exit 1
           fi
-          echo "OK: dist/api/config.php ready for deploy"
+          if [ ! -f dist/api/staging-proxy.php ]; then
+            echo "::error::dist/api/staging-proxy.php missing after build"
+            exit 1
+          fi
+          if [ ! -f dist/.htaccess ]; then
+            echo "::error::dist/.htaccess missing after build"
+            exit 1
+          fi
+          if ! grep -q 'staging-proxy.php' dist/.htaccess; then
+            echo "::error::dist/.htaccess missing staging-proxy rewrite rules"
+            exit 1
+          fi
+          echo "OK: dist/api/config.php, staging-proxy.php, and .htaccess ready for deploy"
 
       - name: Test FTP connection
         env:

@@ -75,6 +75,11 @@ VIDEO SIZES (approx.)
 CONTACT FORM
   Uses PHP at /api/contact (not Node.js). GoDaddy shared hosting supports PHP.
 
+APP APIs (login OTP, dashboard, telemedicine, …)
+  Relative paths (/auth, /dashboard, …) are rewritten by .htaccess to
+  api/staging-proxy.php → https://staging.setuai.com
+  Do not set VITE_API_URL to staging unless staging CORS/CORP allow setuai.com.
+
 NEED FROM YOU
   - SMTP password for no_reply@setuai.com (GoDaddy email)
   - Confirm: replace entire public_html or deploy to subfolder?

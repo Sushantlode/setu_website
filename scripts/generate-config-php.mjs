@@ -60,6 +60,7 @@ return [
     "daily_limit" => ${Number(process.env.CONTACT_DAILY_LIMIT) || 3},
     "allowed_origins" => ${phpArray(allowedOrigins)},
     "send_user_confirmation" => ${phpBool(process.env.SEND_USER_CONFIRMATION ?? "false")},
+    "staging_api_base" => ${phpString(process.env.STAGING_API_BASE || "https://staging.setuai.com")},
 ];
 `
 

@@ -39,6 +39,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 | `SMTP_PORT` | `465` | Optional |
 | `SMTP_FROM` | `Setu <no_reply@setuai.com>` | Optional |
 | `CONTACT_TO_EMAIL` | `support@setuai.com` | Optional |
+| `STAGING_API_BASE` | `https://staging.setuai.com` (API proxy upstream) | Optional |
 
 **Never commit passwords to git.** Use GitHub Secrets only.
 
@@ -228,9 +229,17 @@ Upload changed files from `dist/` to `public_html` (or full replace).
 
 ## Local vs production
 
-| Environment | Contact API |
-|-------------|-------------|
-| `npm run dev:all` | Node.js on port 3001 |
-| GoDaddy production | PHP at `/api/contact` |
+| Environment | Contact API | Auth / app APIs (`/auth`, `/dashboard`, …) |
+|-------------|-------------|-----------------------------------------------|
+| `npm run dev` | Node on `:3001` (via Vite `/api`) | Vite proxy → `https://staging.setuai.com` |
+| GoDaddy production | PHP `/api/contact` | PHP `/api/staging-proxy.php` via `.htaccess` → staging |
 
-No code changes needed — production uses same-origin `/api/contact` automatically.
+Keep `VITE_API_URL` empty in production. Relative bases (`/auth`, …) stay same-origin so the browser never hits staging CORS/CORP.
+
+Optional GitHub secret `STAGING_API_BASE` (default `https://staging.setuai.com`) is written into `api/config.php` for the proxy upstream.
+
+### After deploy — quick checks
+
+- `https://setuai.com/api/health` → PHP health OK
+- `POST https://setuai.com/auth/otp/send` with JSON `{"mobile":"…"}` → JSON from staging (not `index.html`)
+- Login OTP in the browser on `https://setuai.com`
