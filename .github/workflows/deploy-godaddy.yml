@@ -95,7 +95,7 @@ jobs:
           SITE_NAME: SETU
           CONTACT_DAILY_LIMIT: ${{ secrets.CONTACT_DAILY_LIMIT }}
           ALLOWED_ORIGINS: https://setuai.com,https://www.setuai.com
-          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
+          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE || 'https://staging.setuai.com' }}
         run: node scripts/generate-config-php.mjs
 
       - name: Build production bundle

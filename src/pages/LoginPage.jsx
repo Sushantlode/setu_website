@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, Smartphone } from "lucide-react"
 import { assets } from "../data/content"
 import {
   loginWithOtp,
+  sendLoginOtp,
   sendRegistrationOtp,
   verifyRegistrationOtp,
 } from "../api/auth"
@@ -44,12 +45,19 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const result = await sendRegistrationOtp(trimmed, receiveUpdates)
+      // Sign-in uses POST /auth/otp/send (same as RN app).
+      // Register uses POST /auth/register/send-otp.
+      const result = isRegister
+        ? await sendRegistrationOtp(trimmed, receiveUpdates)
+        : await sendLoginOtp(trimmed)
       setMobile(trimmed)
       setFlow(result.kind)
       if (result.kind === "profile") {
         navigate("/register/profile", {
-          state: { mobile: trimmed, mobileAlreadyVerified: result.mobileAlreadyVerified },
+          state: {
+            mobile: trimmed,
+            mobileAlreadyVerified: result.mobileAlreadyVerified,
+          },
         })
         return
       }

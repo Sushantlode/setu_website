@@ -77,7 +77,9 @@ CONTACT FORM
 
 APP APIs (login OTP, dashboard, telemedicine, …)
   Relative paths (/auth, /dashboard, …) are rewritten by .htaccess to
-  api/staging-proxy.php → https://api.setuai.com
+  api/staging-proxy.php → https://staging.setuai.com
+  (Override with STAGING_API_BASE / config.php staging_api_base.)
+  Sign-in OTP uses POST /auth/otp/send (not /register/send-otp).
   Do not set VITE_API_URL to the API host unless CORS/CORP allow setuai.com.
 
 NEED FROM YOU

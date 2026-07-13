@@ -46,6 +46,7 @@ export async function sendRegistrationOtp(mobile, receiveUpdates = false) {
     return { kind: "register", mobile }
   }
 
+  // Already registered → fall back to login OTP (/otp/send)
   if (response.status === 409) {
     return sendLoginOtp(mobile)
   }
@@ -53,6 +54,7 @@ export async function sendRegistrationOtp(mobile, receiveUpdates = false) {
   throw new Error(data.message || "Failed to send OTP.")
 }
 
+/** Sign-in OTP — POST /auth/otp/send (same as SETU app). */
 export async function sendLoginOtp(mobile) {
   const { response, data } = await parseJson(
     await fetch(authUrl("/otp/send"), {
@@ -67,8 +69,20 @@ export async function sendLoginOtp(mobile) {
   }
 
   const msg = String(data.message || "").toLowerCase()
-  if (msg.includes("user not found")) {
-    return { kind: "profile", mobile, mobileAlreadyVerified: true }
+  if (response.status === 404 || msg.includes("user not found")) {
+    const err = new Error(
+      "No account found for this number. Please create an account.",
+    )
+    err.code = "USER_NOT_FOUND"
+    throw err
+  }
+
+  // Gateway/upstream HTML 502 — surface a clearer message than empty body
+  if (response.status === 502) {
+    throw new Error(
+      data.message ||
+        "Auth service unavailable (502). Check Vite proxy target / Auth health.",
+    )
   }
 
   throw new Error(data.message || "Failed to send login OTP.")

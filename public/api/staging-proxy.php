@@ -1,14 +1,17 @@
 <?php
 /**
- * Same-origin reverse proxy to api.setuai.com for GoDaddy static hosting.
+ * Same-origin reverse proxy for GoDaddy static hosting.
  *
  * Local Vite proxies /auth, /dashboard, etc. Production has no Node proxy, and
  * API CORS/CORP blocks direct browser calls from https://setuai.com.
  * .htaccess rewrites those prefixes here so the SPA keeps relative API bases.
+ *
+ * Default upstream: staging Auth (api.setuai.com/auth currently returns nginx 502).
+ * Override via api/config.php → staging_api_base, or GitHub secret STAGING_API_BASE.
  */
 declare(strict_types=1);
 
-const STAGING_DEFAULT = "https://api.setuai.com";
+const STAGING_DEFAULT = "https://staging.setuai.com";
 
 /** Path prefixes mirrored from vite.config.js stagingProxy list */
 const ALLOWED_PREFIXES = [
