@@ -71,12 +71,11 @@ export default function ReportsHome() {
             className="mb-4 flex items-center gap-3 rounded-2xl border border-[#E6EEF5] bg-white p-4 shadow-sm transition hover:border-[#1E9BFF]/40"
           >
             <img
-              src={latestBanner?.icon_url || reportAsset("latest_docs.png")}
+              src={
+                latestBanner?.icon_url || reportAsset("header_image.png")
+              }
               alt=""
               className="h-14 w-14 shrink-0 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = "none"
-              }}
             />
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-[#0E1C2F]">
@@ -104,9 +103,6 @@ export default function ReportsHome() {
                       src={item.imageUrl}
                       alt=""
                       className="mb-3 h-12 w-12 object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.visibility = "hidden"
-                      }}
                     />
                   ) : (
                     <span className="mb-3 block h-12 w-12 rounded-xl bg-[#EEF7FF]" />
@@ -128,13 +124,10 @@ export default function ReportsHome() {
           >
             <img
               src={
-                uploadBanner?.icon_url || reportAsset("upload_document.png")
+                uploadBanner?.icon_url || reportAsset("upload_icon.png")
               }
               alt=""
               className="h-14 w-14 shrink-0 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = "none"
-              }}
             />
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-[#0E1C2F]">

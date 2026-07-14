@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft, ArrowRight, Check } from "lucide-react"
+import { Link, useParams } from "react-router-dom"
+import { ArrowLeft, Check } from "lucide-react"
 import { appModules } from "../data/content"
 
 export default function ModulePage() {
   const { moduleId } = useParams()
-  const navigate = useNavigate()
   const module = appModules.find((m) => m.id === moduleId)
-  const [started, setStarted] = useState(false)
-
-  useEffect(() => {
-    setStarted(false)
-  }, [moduleId])
 
   if (!module) {
     return (
@@ -25,60 +18,16 @@ export default function ModulePage() {
   }
 
   const accent = module.accent || "#1C39BB"
-  const title = module.welcomeTitle || module.title
-  const subtitle = module.welcomeSubtitle || module.description
-
-  if (!started) {
-    return (
-      <main className="relative min-h-[calc(100svh-4.5rem)] overflow-hidden bg-setu-charcoal text-white">
-        <img
-          src={module.heroImage || module.icon}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/55 to-black/25" />
-
-        <div className="relative z-10 flex min-h-[calc(100svh-4.5rem)] flex-col px-5 pb-10 pt-5 sm:px-8">
-          <button
-            type="button"
-            onClick={() => navigate("/app")}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-            aria-label="Back"
-          >
-            <ArrowLeft size={22} />
-          </button>
-
-          <div className="mt-[12vh] max-w-xl sm:mt-[14vh]">
-            <h1 className="font-serif text-4xl font-normal leading-tight sm:text-5xl">{title}</h1>
-            <p className="mt-4 text-base leading-relaxed text-white/85 sm:text-lg">{subtitle}</p>
-          </div>
-
-          <div className="mt-auto flex justify-center pt-10">
-            <button
-              type="button"
-              onClick={() => setStarted(true)}
-              className="inline-flex min-w-[12rem] items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-[1.02]"
-              style={{ backgroundColor: accent }}
-            >
-              {module.ctaLabel || "Get Started"}
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </main>
-    )
-  }
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 pb-8 sm:px-6 lg:max-w-7xl lg:px-8 lg:py-8">
-      <button
-        type="button"
-        onClick={() => setStarted(false)}
+      <Link
+        to="/app"
         className="mb-6 inline-flex items-center gap-2 text-sm text-setu-muted transition-colors hover:text-setu-charcoal"
       >
         <ArrowLeft size={16} />
-        Welcome
-      </button>
+        Dashboard
+      </Link>
 
       <div className="overflow-hidden rounded-[1.75rem] border border-setu-stone/15 bg-white shadow-sm">
         <div

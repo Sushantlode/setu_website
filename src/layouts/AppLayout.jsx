@@ -4,50 +4,64 @@ import { Copy, Check, FileText, Home, Info, LogOut, Menu, Phone, X } from "lucid
 import { assets } from "../data/content"
 import { useAuth } from "../context/AuthContext"
 import { getBottomApps } from "../api/dashboard"
+import { resolveAppLabel } from "../utils/appLabels"
 
 const SOS_RED = "#EA080E"
 
 const FALLBACK_TABS = [
   { id: "home", label: "Home", to: "/app", end: true, Icon: Home },
   { id: "reports", label: "Reports", to: "/app/reports", Icon: FileText },
-  { id: "about", label: "About", to: "/#about", Icon: Info, external: true },
+  { id: "about", label: "About Us", to: "/#about", Icon: Info, external: true },
 ]
 
 function mapApiTab(tab) {
-  const route = String(tab.route_name || tab.label || "").toLowerCase()
-  if (route.includes("report")) {
+  const route = String(tab.route_name || "").toLowerCase()
+  const labelKey = String(tab.label || "").toLowerCase()
+  const label = resolveAppLabel(tab.label, tab.route_name)
+
+  if (route.includes("report") || labelKey === "report" || labelKey === "reports") {
     return {
       id: `api-${tab.id || "reports"}`,
-      label: tab.label || "Reports",
+      label,
       to: "/app/reports",
       Icon: FileText,
       iconUrl: tab.icon_url,
     }
   }
-  if (route.includes("home") || route.includes("dashboard")) {
+  if (
+    route.includes("home") ||
+    route.includes("dashboard") ||
+    labelKey === "home" ||
+    labelKey === "dashboard.home"
+  ) {
     return {
       id: `api-${tab.id || "home"}`,
-      label: tab.label || "Home",
+      label,
       to: "/app",
       end: true,
       Icon: Home,
       iconUrl: tab.icon_url,
     }
   }
-  if (route.includes("about")) {
+  if (route.includes("about") || labelKey === "about_us") {
     return {
       id: `api-${tab.id || "about"}`,
-      label: tab.label || "About",
+      label,
       to: "/#about",
       Icon: Info,
       external: true,
       iconUrl: tab.icon_url,
     }
   }
-  if (route.includes("rate") || route.includes("feedback")) {
+  if (
+    route.includes("rate") ||
+    route.includes("feedback") ||
+    labelKey === "rate_us" ||
+    labelKey === "rate_the_app"
+  ) {
     return {
       id: `api-${tab.id || "rate"}`,
-      label: tab.label || "Rate Us",
+      label,
       to: "/#contact",
       Icon: Info,
       external: true,
@@ -72,7 +86,7 @@ function NavIcon({ tab, className = "h-4 w-4" }) {
 }
 
 function tabLabel(tab) {
-  return String(tab.label || "").replace(/^dashboard\./, "")
+  return resolveAppLabel(tab.label, tab.route_name)
 }
 
 export default function AppLayout() {

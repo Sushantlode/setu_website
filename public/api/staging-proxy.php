@@ -12,6 +12,8 @@
 declare(strict_types=1);
 
 const STAGING_DEFAULT = "https://staging.setuai.com";
+/** Report/UI art is on production storage; staging often 500s on these keys. */
+const ASSETS_API_DEFAULT = "https://api.setuai.com";
 
 /** Path prefixes mirrored from vite.config.js stagingProxy list */
 const ALLOWED_PREFIXES = [
@@ -68,6 +70,9 @@ if (!$allowed) {
 }
 
 $upstreamBase = STAGING_DEFAULT;
+if (str_starts_with($requestPath, "assets/api")) {
+    $upstreamBase = ASSETS_API_DEFAULT;
+}
 $configPath = __DIR__ . "/config.php";
 if (is_file($configPath)) {
     $config = require $configPath;

@@ -1,0 +1,40 @@
+---
+description: SETU website React/API module conventions for pages and clients
+globs: src/**/*.{js,jsx}
+alwaysApply: false
+---
+
+# Website module conventions
+
+## API clients (`src/api/`)
+
+- One file per product area (`sos.js`, `mental.js`, `generic.js`, `reports.js`).
+- Build URLs with `*Url()` helpers from `src/config/api.js` — never hardcode staging hosts in pages.
+- Normalize nested API envelopes once in the client; pages should receive clean arrays/objects.
+- Export small helpers (fallbacks, fee math, image URL) next to the client when RN has them.
+
+## Pages (`src/pages/<module>/`)
+
+- Shared chrome in `*Shell.jsx` (back, title, optional header actions).
+- Flow state in context or `sessionStorage` (see `MentalHealthContext`, `GenericMedicineContext`).
+- Loading / empty / error states required for list screens.
+- Deep links must match routes registered under `/app/<module>/...`.
+
+## Do not
+
+```jsx
+// ❌ Marketing ModulePage stub for a shipped app feature
+<Route path="sos" element={<ModulePage />} />
+
+// ✅ Real module home
+<Route path="sos" element={<SosHome />} />
+```
+
+```js
+// ❌ Absolute API host in a page
+fetch("https://staging.setuai.com/mental/api/v1/submissions")
+
+// ✅ Config + client
+import { fetchSubmissions } from "../../api/mental"
+await fetchSubmissions(session)
+```

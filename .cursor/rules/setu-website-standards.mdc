@@ -1,0 +1,44 @@
+---
+description: SETU website — restrict scope, prefer RN parity, avoid overbuilding
+alwaysApply: true
+---
+
+# SETU Website — scope & coding standards
+
+## Scope discipline (do less)
+
+- Implement only what the user asked. Do not expand into adjacent modules, refactors, or drive-by cleanups.
+- Prefer matching existing `setuReactNative` screens/APIs over inventing new UX or endpoints.
+- Do not add welcome/marketing stubs when app parity is requested — wire the real module home.
+- Do not add markdown docs, README churn, or comments unless explicitly requested.
+- Do not commit `.env`, secrets, or credential files.
+
+## Module parity pattern
+
+When bringing an app module to the website:
+
+1. Read RN screens + API clients first (`setuReactNative`).
+2. Add `src/api/<module>.js` using `src/config/api.js` bases + `authFetch` / `authHeaders`.
+3. Add pages under `src/pages/<module>/` and nest routes in `App.jsx` **before** `:moduleId`.
+4. Reuse shell patterns (`*Shell.jsx`), Toast, and AuthContext — do not create parallel auth.
+5. Proxy prefixes must exist in `vite.config.js` and `public/api/staging-proxy.php`.
+
+## Auth
+
+- Access JWT: `Authorization: Bearer <token>`.
+- Refresh SETU sessions via Auth `/auth/refreshToken` only — never invent refresh URLs.
+- If a service returns `Invalid refresh token`, prefer Bearer-only after Auth refresh (service secrets may differ).
+- Persist refreshed tokens to `setu_auth_session` and keep AuthContext in sync.
+
+## Code style
+
+- Match local file conventions (imports, naming, Tailwind tokens already in use).
+- Keep components focused; extract API clients to `src/api/`, helpers to `src/utils/`.
+- No unused props, speculative abstractions, or unnecessary `useMemo`/`useCallback`.
+- User-facing copy: clear English; resolve i18n keys (do not show raw keys like `rate_us`).
+- After substantive UI/API work, run `npm run build` in `setu_website` before claiming done.
+
+## Storage images
+
+- Never load `api.setuai.com/assets/...` cross-origin directly (CORP blocks it).
+- Use `resolveStorageImageUrl` / `buildStorageObjectUrl` so images go through same-origin `/assets/api`.

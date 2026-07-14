@@ -151,3 +151,43 @@ export function buildStorageObjectUrl(fileKey, contentType = "image/png") {
     fileKey,
   )}&disposition=inline&contentType=${encodeURIComponent(contentType)}`
 }
+
+/**
+ * Rewrite remote SETU storage URLs to same-origin `/assets/api/...` so images load
+ * in the browser (api.setuai.com sets Cross-Origin-Resource-Policy: same-origin).
+ */
+export function resolveStorageImageUrl(url) {
+  if (url == null || url === "") return ""
+  const raw = String(url).trim()
+  if (!raw) return ""
+
+  if (raw.startsWith("/assets/api/")) return raw
+
+  try {
+    const parsed = new URL(
+      raw,
+      typeof window !== "undefined" ? window.location.origin : "http://localhost",
+    )
+    if (parsed.pathname.includes("/assets/api/v1/storage/object")) {
+      const key = parsed.searchParams.get("key")
+      if (key) {
+        const contentType = parsed.searchParams.get("contentType") || "image/png"
+        return buildStorageObjectUrl(key, contentType)
+      }
+      return `${parsed.pathname}${parsed.search}`
+    }
+  } catch {
+    /* not a URL */
+  }
+
+  const cf = raw.match(/cloudfront\.net\/Reports\/public\/(.+)$/i)
+  if (cf?.[1]) {
+    return buildStorageObjectUrl(`Reports/public/${decodeURIComponent(cf[1])}`)
+  }
+
+  if (raw.startsWith("Reports/public/")) {
+    return buildStorageObjectUrl(raw)
+  }
+
+  return raw
+}

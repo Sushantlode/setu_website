@@ -1,19 +1,26 @@
 /**
  * Reports / Health Line APIs — mirrors setuReactNative Reports screens.
  */
-import { reportsUrl, preventiveUrl, medUrl } from "../config/api"
+import {
+  buildStorageObjectUrl,
+  medUrl,
+  preventiveUrl,
+  reportsUrl,
+  resolveStorageImageUrl,
+} from "../config/api"
 import { authHeaders } from "./http"
 
-const CLOUDFRONT_REPORTS =
-  "https://d10pnqyli54qno.cloudfront.net/Reports/public/"
-
-export const reportAsset = (path) => `${CLOUDFRONT_REPORTS}${path}`
+/** Storage-backed report art (same keys as Reports-Service seed / staging DB). */
+export const reportAsset = (fileName) =>
+  buildStorageObjectUrl(`Reports/public/${fileName}`)
 
 /** RN tile `route` → website path slug under /app/reports/ */
 export const TILE_ROUTE_TO_SLUG = {
   ViewReports: "view-reports",
+  TestReport: "view-reports",
   VitalSigns: "vital-signs",
   MedicationsList: "medications",
+  Medication: "medications",
   Allergies: "allergies",
   Immunization: "immunization",
   LifeStyle: "lifestyle",
@@ -23,62 +30,106 @@ export const TILE_ROUTE_TO_SLUG = {
   MedicalDocumentsUpload: "upload",
 }
 
+const TILE_IMAGE_BY_ROUTE = {
+  ViewReports: "Layer_1.png",
+  TestReport: "Layer_1.png",
+  VitalSigns: "heart_beat.png",
+  MedicationsList: "medications_main.png",
+  Medication: "medications_main.png",
+  Allergies: "allergis_main.png",
+  Immunization: "immunization.png",
+  LifeStyle: "morning 1.png",
+  CasePaper: "Group.png",
+  BiomedicalImplants: "Illustration.png",
+}
+
+export function tileImageUrl(route, imageUrl) {
+  const resolved = resolveStorageImageUrl(imageUrl)
+  if (resolved) return resolved
+  const file = TILE_IMAGE_BY_ROUTE[route]
+  return file ? reportAsset(file) : ""
+}
+
+function normalizeBanner(data) {
+  if (!data) return null
+  return {
+    ...data,
+    icon_url: resolveStorageImageUrl(data.icon_url || data.iconUrl),
+  }
+}
+
+function normalizeTile(tile) {
+  if (!tile) return tile
+  return {
+    ...tile,
+    imageUrl: tileImageUrl(tile.route, tile.imageUrl || tile.image_url),
+  }
+}
+
+function normalizeSlide(slide) {
+  if (!slide) return slide
+  return {
+    ...slide,
+    imageUrl: resolveStorageImageUrl(slide.imageUrl || slide.image_url),
+  }
+}
+
 export const FALLBACK_TILES = [
   {
     id: "view-reports",
-    route: "ViewReports",
-    title: "View Reports",
-    subtitle: "Lab & health documents",
-    imageUrl: reportAsset("view_reports.png"),
+    route: "TestReport",
+    title: "Reports",
+    subtitle: "Browse lab and radiology reports",
+    imageUrl: reportAsset("Layer_1.png"),
   },
   {
     id: "vital-signs",
     route: "VitalSigns",
     title: "Vital Signs",
-    subtitle: "BP, SpO₂, pulse & more",
-    imageUrl: reportAsset("vital_signs.png"),
+    subtitle: "Track your vital health data",
+    imageUrl: reportAsset("heart_beat.png"),
   },
   {
     id: "medications",
-    route: "MedicationsList",
+    route: "Medication",
     title: "Medications",
-    subtitle: "Your medicine list",
-    imageUrl: reportAsset("medications.png"),
+    subtitle: "Your ongoing medicines",
+    imageUrl: reportAsset("medications_main.png"),
   },
   {
     id: "allergies",
     route: "Allergies",
     title: "Allergies",
-    subtitle: "Track known allergies",
-    imageUrl: reportAsset("allergies.png"),
+    subtitle: "View known allergies",
+    imageUrl: reportAsset("allergis_main.png"),
   },
   {
     id: "immunization",
     route: "Immunization",
     title: "Immunization",
-    subtitle: "Vaccination history",
+    subtitle: "Vaccination records",
     imageUrl: reportAsset("immunization.png"),
   },
   {
     id: "lifestyle",
     route: "LifeStyle",
     title: "Lifestyle",
-    subtitle: "Habits & wellness notes",
-    imageUrl: reportAsset("lifestyle.png"),
+    subtitle: "Lifestyle & habits history",
+    imageUrl: reportAsset("morning 1.png"),
   },
   {
     id: "case-paper",
     route: "CasePaper",
     title: "Case Paper",
-    subtitle: "Clinical case notes",
-    imageUrl: reportAsset("case_paper.png"),
+    subtitle: "Doctor visit case papers",
+    imageUrl: reportAsset("Group.png"),
   },
   {
     id: "implants",
     route: "BiomedicalImplants",
-    title: "Implants",
-    subtitle: "Biomedical implants",
-    imageUrl: reportAsset("implants.png"),
+    title: "Implant records",
+    subtitle: "Implant details",
+    imageUrl: reportAsset("Illustration.png"),
   },
 ]
 
@@ -138,10 +189,10 @@ export async function loadReportsHome() {
   ])
 
   return {
-    latestBanner: latest,
-    tiles: tiles?.length ? tiles : FALLBACK_TILES,
-    uploadBanner: upload,
-    lifestyleSlides: slides,
+    latestBanner: normalizeBanner(latest),
+    tiles: (tiles?.length ? tiles : FALLBACK_TILES).map(normalizeTile),
+    uploadBanner: normalizeBanner(upload),
+    lifestyleSlides: (slides || []).map(normalizeSlide),
   }
 }
 
@@ -166,7 +217,10 @@ export async function getReportUiConfig({ token, refreshToken } = {}) {
     refreshToken,
   })
   if (!response.ok) throw new Error(data?.message || "Failed to load report categories")
-  return extractList(data)
+  return extractList(data).map((row) => ({
+    ...row,
+    icon_url: resolveStorageImageUrl(row.icon_url || row.iconUrl),
+  }))
 }
 
 export async function getUserReports(userId, { token, refreshToken } = {}) {

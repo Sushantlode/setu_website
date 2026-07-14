@@ -8,6 +8,8 @@ import tailwindcss from '@tailwindcss/vite'
  * Override: VITE_PROXY_API_HOST=https://api.setuai.com or http://localhost:7005
  */
 const DEFAULT_API_HOST = 'https://staging.setuai.com'
+/** Report/dashboard art lives on production storage (staging assets often 500). */
+const DEFAULT_ASSETS_API_HOST = 'https://api.setuai.com'
 
 /** Proxy SETU service prefixes to the API host (mirrors RN .env bases). */
 function apiProxy(pathPrefix, apiHost) {
@@ -23,6 +25,10 @@ function apiProxy(pathPrefix, apiHost) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const apiHost = (env.VITE_PROXY_API_HOST || DEFAULT_API_HOST).replace(/\/+$/, '')
+  const assetsHost = (env.VITE_ASSETS_API_HOST || DEFAULT_ASSETS_API_HOST).replace(
+    /\/+$/,
+    '',
+  )
 
   return {
     plugins: [react(), tailwindcss()],
@@ -47,9 +53,8 @@ export default defineConfig(({ mode }) => {
         // Payment verify + fee breakdown (telemedicine / book-test flows)
         ...apiProxy('/pay', apiHost),
         ...apiProxy('/amount-breakdown', apiHost),
-        // Only proxy the remote storage API — not `/assets/*` static files from public/
-        // (dashboard icons, welcome art, marketing images live in public/assets/).
-        ...apiProxy('/assets/api', apiHost),
+        // Storage objects → production (staging /assets/api returns 500 for most keys).
+        ...apiProxy('/assets/api', assetsHost),
         ...apiProxy('/jobs', apiHost),
         ...apiProxy('/notification', apiHost),
         ...apiProxy('/userprofile', apiHost),

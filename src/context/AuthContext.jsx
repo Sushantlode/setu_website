@@ -146,6 +146,25 @@ export function AuthProvider({ children }) {
     return profile
   }, [session, updateProfile])
 
+  useEffect(() => {
+    function onTokens(event) {
+      const detail = event?.detail
+      if (!detail?.token) return
+      setSession((prev) => {
+        if (!prev) return prev
+        const next = normalizeSession({
+          ...prev,
+          token: detail.token,
+          refreshToken: detail.refreshToken || prev.refreshToken,
+        })
+        writeStoredSession(next)
+        return next
+      })
+    }
+    window.addEventListener("setu:tokens", onTokens)
+    return () => window.removeEventListener("setu:tokens", onTokens)
+  }, [])
+
   const value = useMemo(
     () => ({
       session,
