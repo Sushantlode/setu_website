@@ -136,45 +136,7 @@ export default function AppDashboard() {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pt-6 lg:px-8">
-        {activeSlide && (
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: [0.15, 0, 0.12, 1] }}
-            className="relative mb-7 overflow-hidden rounded-2xl border border-setu-stone/40 bg-setu-sand shadow-[0_8px_28px_-12px_rgba(42,40,38,0.18)] sm:mb-8"
-          >
-            <img
-              key={activeSlide.key}
-              src={activeSlide.src}
-              alt={activeSlide.title || "SETU highlight"}
-              className="h-36 w-full object-cover sm:h-48 md:h-56"
-              loading="lazy"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-setu-charcoal/25 to-transparent"
-            />
-            {mediaItems.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-                {mediaItems.slice(0, 6).map((item, i) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    aria-label={`Slide ${i + 1}`}
-                    onClick={() => setSlideIndex(i)}
-                    className={`h-1.5 rounded-full transition-all duration-normal ease-vantara ${
-                      i === slideIndex % mediaItems.length
-                        ? "w-5 bg-setu-cream"
-                        : "w-1.5 bg-setu-cream/55 hover:bg-setu-cream/80"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        <section className="mb-8 sm:mb-10">
+        <section className="mb-7 sm:mb-8">
           <div className="mb-4 flex items-end justify-between gap-3 sm:mb-5">
             <h2 className="text-sm font-semibold tracking-wide text-setu-teal-deep sm:text-base">
               Services
@@ -225,6 +187,44 @@ export default function AppDashboard() {
             ))}
           </motion.div>
         </section>
+
+        {activeSlide && (
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.15, 0, 0.12, 1] }}
+            className="relative mb-7 overflow-hidden rounded-2xl border border-setu-stone/40 bg-setu-sand shadow-[0_8px_28px_-12px_rgba(42,40,38,0.18)] sm:mb-8"
+          >
+            <img
+              key={activeSlide.key}
+              src={activeSlide.src}
+              alt={activeSlide.title || "SETU highlight"}
+              className="h-36 w-full object-cover sm:h-48 md:h-56"
+              loading="lazy"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-setu-charcoal/25 to-transparent"
+            />
+            {mediaItems.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                {mediaItems.slice(0, 6).map((item, i) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    aria-label={`Slide ${i + 1}`}
+                    onClick={() => setSlideIndex(i)}
+                    className={`h-1.5 rounded-full transition-all duration-normal ease-vantara ${
+                      i === slideIndex % mediaItems.length
+                        ? "w-5 bg-setu-cream"
+                        : "w-1.5 bg-setu-cream/55 hover:bg-setu-cream/80"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
 
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}

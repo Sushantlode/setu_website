@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, Navigate, useNavigate, useLocation } from "react-router-dom"
 import { ArrowLeft, Loader2, Smartphone } from "lucide-react"
 import { assets } from "../data/content"
@@ -25,7 +25,15 @@ export default function LoginPage() {
   const [receiveUpdates, setReceiveUpdates] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [errorCode, setErrorCode] = useState("")
   const notice = location.state?.notice || ""
+
+  useEffect(() => {
+    const prefilled = location.state?.mobile
+    if (prefilled && /^[6-9][0-9]{9}$/.test(String(prefilled))) {
+      setMobile(String(prefilled))
+    }
+  }, [location.state?.mobile])
 
   const redirectTo = location.state?.from || "/app"
 
@@ -36,6 +44,7 @@ export default function LoginPage() {
   const handleSendOtp = async (e) => {
     e.preventDefault()
     setError("")
+    setErrorCode("")
 
     const trimmed = mobile.trim()
     if (!/^[6-9][0-9]{9}$/.test(trimmed)) {
@@ -64,6 +73,7 @@ export default function LoginPage() {
       setStep("otp")
     } catch (err) {
       setError(err.message || "Failed to send OTP.")
+      setErrorCode(err.code || "")
     } finally {
       setLoading(false)
     }
@@ -72,6 +82,7 @@ export default function LoginPage() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault()
     setError("")
+    setErrorCode("")
 
     if (otp.length !== OTP_LENGTH) {
       setError("Enter the 6-digit OTP.")
@@ -160,6 +171,16 @@ export default function LoginPage() {
                 <p className="text-sm text-[#1C39BB]">{notice}</p>
               )}
               {error && <p className="text-sm text-red-600">{error}</p>}
+
+              {errorCode === "USER_NOT_FOUND" && !isRegister && (
+                <Link
+                  to="/register"
+                  state={{ mobile: mobile.trim(), notice: "Create your SETU account to continue." }}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-[#1C39BB] bg-white px-5 py-3 text-sm font-semibold text-[#1C39BB] transition-colors hover:bg-[#EEF3FF]"
+                >
+                  Create account
+                </Link>
+              )}
 
               <button
                 type="submit"

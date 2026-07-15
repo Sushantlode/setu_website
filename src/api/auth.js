@@ -33,6 +33,27 @@ function isUserNotFound(payload, status) {
   return false
 }
 
+function isRegistrationAlreadyVerifiedMessage(message) {
+  return String(message || "").toLowerCase().includes("already verified")
+}
+
+/** OTP verified in registration_otps but users row never created (RN RegisterWithOtp parity). */
+async function probePartialRegistration(mobile) {
+  const { response, data } = await parseJson(
+    await fetch(authUrl("/register/send-otp"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mobile }),
+    }),
+  )
+
+  if (response.status === 409 && isRegistrationAlreadyVerifiedMessage(data.message)) {
+    return { kind: "profile", mobile, mobileAlreadyVerified: true }
+  }
+
+  return null
+}
+
 export async function sendRegistrationOtp(mobile, receiveUpdates = false) {
   const { response, data } = await parseJson(
     await fetch(authUrl("/register/send-otp"), {
@@ -46,8 +67,12 @@ export async function sendRegistrationOtp(mobile, receiveUpdates = false) {
     return { kind: "register", mobile }
   }
 
-  // Already registered → fall back to login OTP (/otp/send)
   if (response.status === 409) {
+    // Partial registration — skip OTP and finish profile (same as RN RegisterName).
+    if (isRegistrationAlreadyVerifiedMessage(data.message)) {
+      return { kind: "profile", mobile, mobileAlreadyVerified: true }
+    }
+    // Fully registered → fall back to login OTP (/otp/send)
     return sendLoginOtp(mobile)
   }
 
@@ -70,6 +95,9 @@ export async function sendLoginOtp(mobile) {
 
   const msg = String(data.message || "").toLowerCase()
   if (response.status === 404 || msg.includes("user not found")) {
+    const partial = await probePartialRegistration(mobile)
+    if (partial) return partial
+
     const err = new Error(
       "No account found for this number. Please create an account.",
     )

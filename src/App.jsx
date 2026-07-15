@@ -70,6 +70,53 @@ import MentalDeviceReview from "./pages/mental/MentalDeviceReview"
 import MentalDeviceSuccess from "./pages/mental/MentalDeviceSuccess"
 import MentalSolh from "./pages/mental/MentalSolh"
 import MentalFaceScan from "./pages/mental/MentalFaceScan"
+import SchemesHome from "./pages/schemes/SchemesHome"
+import SchemesCategories from "./pages/schemes/SchemesCategories"
+import SchemesList from "./pages/schemes/SchemesList"
+import SchemesStates from "./pages/schemes/SchemesStates"
+import SchemesStateEnrolled from "./pages/schemes/SchemesStateEnrolled"
+import SchemeOverview from "./pages/schemes/SchemeOverview"
+import SchemesInterests from "./pages/schemes/SchemesInterests"
+import FindWizard from "./pages/schemes/FindWizard"
+import FindResults from "./pages/schemes/FindResults"
+import FindProfiles from "./pages/schemes/FindProfiles"
+import DrugHub from "./pages/drug/DrugHub"
+import DrugBrowse from "./pages/drug/DrugBrowse"
+import DrugDetail from "./pages/drug/DrugDetail"
+import AyurvedaHome from "./pages/drug/AyurvedaHome"
+import AyurvedaDetail from "./pages/drug/AyurvedaDetail"
+import DrugReminders from "./pages/drug/DrugReminders"
+import AgriHub from "./pages/agriculture/AgriHub"
+import AgriProducts from "./pages/agriculture/AgriProducts"
+import AgriProductDetail from "./pages/agriculture/AgriProductDetail"
+import AgriCart from "./pages/agriculture/AgriCart"
+import AgriCheckout from "./pages/agriculture/AgriCheckout"
+import AgriOrders from "./pages/agriculture/AgriOrders"
+import AgriKnowledge from "./pages/agriculture/AgriKnowledge"
+import AgriKnowledgeDetail from "./pages/agriculture/AgriKnowledgeDetail"
+import AgriSoilBook from "./pages/agriculture/AgriSoilBook"
+import AgriSoilBookings from "./pages/agriculture/AgriSoilBookings"
+import AgriInquiry from "./pages/agriculture/AgriInquiry"
+import AgriInquiryHistory from "./pages/agriculture/AgriInquiryHistory"
+import AgriDisease from "./pages/agriculture/AgriDisease"
+import AbhaHub from "./pages/abha/AbhaHub"
+import AbhaLoginOptions from "./pages/abha/AbhaLoginOptions"
+import AbhaLoginForm from "./pages/abha/AbhaLoginForm"
+import AbhaLoginOtp from "./pages/abha/AbhaLoginOtp"
+import AbhaSelectAddress from "./pages/abha/AbhaSelectAddress"
+import AbhaCreateHub from "./pages/abha/AbhaCreateHub"
+import AbhaCreateAadhaar from "./pages/abha/AbhaCreateAadhaar"
+import AbhaCreateAadhaarOtp from "./pages/abha/AbhaCreateAadhaarOtp"
+import AbhaCreateAddress from "./pages/abha/AbhaCreateAddress"
+import AbhaCreatePhr from "./pages/abha/AbhaCreatePhr"
+import AbhaCreateOtp from "./pages/abha/AbhaCreateOtp"
+import AbhaProfile from "./pages/abha/AbhaProfile"
+import AbhaPhrCard, { AbhaQrShare } from "./pages/abha/AbhaPhrCard"
+import AbhaConsents, {
+  AbhaConsentDetail,
+  AbhaNotifications,
+} from "./pages/abha/AbhaConsents"
+import AbhaFacilities, { AbhaLinkFacility } from "./pages/abha/AbhaFacilities"
 
 export default function App() {
   return (
@@ -179,6 +226,75 @@ export default function App() {
           <Route path="solh/:categoryId" element={<MentalSolh />} />
           <Route path="face-scan" element={<MentalFaceScan />} />
         </Route>
+
+        {/* Government Schemes stack — must be before :moduleId catch-all */}
+        <Route path="govt-schemes" element={<SchemesHome />} />
+        <Route path="govt-schemes/central" element={<SchemesCategories />} />
+        <Route path="govt-schemes/central/:categoryName" element={<SchemesList />} />
+        <Route path="govt-schemes/states" element={<SchemesStates />} />
+        <Route path="govt-schemes/states/:stateCode" element={<SchemesStateEnrolled />} />
+        <Route path="govt-schemes/scheme/:slug" element={<SchemeOverview />} />
+        <Route path="govt-schemes/interests" element={<SchemesInterests />} />
+        <Route path="govt-schemes/find" element={<FindWizard />} />
+        <Route path="govt-schemes/find/results" element={<FindResults />} />
+        <Route path="govt-schemes/find/profiles" element={<FindProfiles />} />
+
+        {/* Drug Directory stack — must be before :moduleId catch-all */}
+        <Route path="drug-directory" element={<DrugHub />} />
+        <Route path="drug-directory/drugs" element={<DrugBrowse />} />
+        <Route path="drug-directory/drugs/:idOrSlug" element={<DrugDetail />} />
+        <Route path="drug-directory/ayurveda" element={<AyurvedaHome />} />
+        <Route
+          path="drug-directory/ayurveda/:idOrSlug"
+          element={<AyurvedaDetail />}
+        />
+        <Route path="drug-directory/reminders" element={<DrugReminders />} />
+
+        {/* Agriculture / Agri Connect — must be before :moduleId catch-all */}
+        <Route path="agriculture" element={<AgriHub />} />
+        <Route path="agriculture/products" element={<AgriProducts />} />
+        <Route path="agriculture/products/:id" element={<AgriProductDetail />} />
+        <Route path="agriculture/cart" element={<AgriCart />} />
+        <Route path="agriculture/checkout" element={<AgriCheckout />} />
+        <Route path="agriculture/orders" element={<AgriOrders />} />
+        <Route path="agriculture/knowledge" element={<AgriKnowledge />} />
+        <Route
+          path="agriculture/knowledge/:id"
+          element={<AgriKnowledgeDetail />}
+        />
+        <Route path="agriculture/soil" element={<AgriSoilBook />} />
+        <Route path="agriculture/soil/bookings" element={<AgriSoilBookings />} />
+        <Route path="agriculture/inquiry" element={<AgriInquiry />} />
+        <Route
+          path="agriculture/inquiry/history"
+          element={<AgriInquiryHistory />}
+        />
+        <Route path="agriculture/disease" element={<AgriDisease />} />
+
+        {/* ABHA / ABDM stack — must be before :moduleId catch-all */}
+        <Route path="abha" element={<AbhaHub />} />
+        <Route path="abha/login" element={<AbhaLoginOptions />} />
+        <Route path="abha/login/otp" element={<AbhaLoginOtp />} />
+        <Route path="abha/login/select-address" element={<AbhaSelectAddress />} />
+        <Route path="abha/login/:method" element={<AbhaLoginForm />} />
+        <Route path="abha/create" element={<AbhaCreateHub />} />
+        <Route path="abha/create/aadhaar" element={<AbhaCreateAadhaar />} />
+        <Route path="abha/create/aadhaar/otp" element={<AbhaCreateAadhaarOtp />} />
+        <Route
+          path="abha/create/aadhaar/address"
+          element={<AbhaCreateAddress />}
+        />
+        <Route path="abha/create/abha-number" element={<AbhaCreatePhr />} />
+        <Route path="abha/create/mobile" element={<AbhaCreatePhr />} />
+        <Route path="abha/create/otp" element={<AbhaCreateOtp />} />
+        <Route path="abha/profile" element={<AbhaProfile />} />
+        <Route path="abha/phr-card" element={<AbhaPhrCard />} />
+        <Route path="abha/qr" element={<AbhaQrShare />} />
+        <Route path="abha/consents" element={<AbhaConsents />} />
+        <Route path="abha/consents/:id" element={<AbhaConsentDetail />} />
+        <Route path="abha/notifications" element={<AbhaNotifications />} />
+        <Route path="abha/facilities" element={<AbhaFacilities />} />
+        <Route path="abha/facilities/link" element={<AbhaLinkFacility />} />
 
         <Route path=":moduleId" element={<ModulePage />} />
       </Route>
