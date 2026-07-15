@@ -117,6 +117,34 @@ import AbhaConsents, {
   AbhaNotifications,
 } from "./pages/abha/AbhaConsents"
 import AbhaFacilities, { AbhaLinkFacility } from "./pages/abha/AbhaFacilities"
+import FitnessOnboarding from "./pages/fitness/FitnessOnboarding"
+import FitnessHome from "./pages/fitness/FitnessHome"
+import FitnessWorkout, {
+  FitnessDailyWorkout,
+  FitnessExerciseDetail,
+} from "./pages/fitness/FitnessWorkout"
+import FitnessFood, {
+  FitnessAddFood,
+  FitnessFavoriteMeals,
+  FitnessMeals,
+  FitnessWater,
+} from "./pages/fitness/FitnessFood"
+import FitnessRecipes, {
+  FitnessPlans,
+  FitnessRecipeDetail,
+  FitnessSavedRecipes,
+  FitnessSwaps,
+} from "./pages/fitness/FitnessRecipes"
+import FitnessDietitians, {
+  FitnessConsultations,
+  FitnessDietitianDetail,
+  FitnessDietPlans,
+  FitnessRequestDietPlan,
+} from "./pages/fitness/FitnessDietitians"
+import FitnessProfile, {
+  FitnessFaqs,
+  FitnessProfileEdit,
+} from "./pages/fitness/FitnessProfile"
 
 export default function App() {
   return (
@@ -295,6 +323,44 @@ export default function App() {
         <Route path="abha/notifications" element={<AbhaNotifications />} />
         <Route path="abha/facilities" element={<AbhaFacilities />} />
         <Route path="abha/facilities/link" element={<AbhaLinkFacility />} />
+
+        {/* Fitness stack — must be before :moduleId catch-all */}
+        <Route path="fitness" element={<FitnessHome />} />
+        <Route path="fitness/home" element={<FitnessHome />} />
+        <Route path="fitness/onboarding" element={<FitnessOnboarding />} />
+        <Route path="fitness/workout" element={<FitnessWorkout />} />
+        <Route path="fitness/workout/daily" element={<FitnessDailyWorkout />} />
+        <Route
+          path="fitness/workout/:exerciseId"
+          element={<FitnessExerciseDetail />}
+        />
+        <Route path="fitness/food" element={<FitnessFood />} />
+        <Route path="fitness/food/water" element={<FitnessWater />} />
+        <Route path="fitness/food/add" element={<FitnessAddFood />} />
+        <Route path="fitness/food/meals" element={<FitnessMeals />} />
+        <Route path="fitness/food/favorites" element={<FitnessFavoriteMeals />} />
+        <Route path="fitness/recipes" element={<FitnessRecipes />} />
+        <Route path="fitness/recipes/saved" element={<FitnessSavedRecipes />} />
+        <Route
+          path="fitness/recipes/:recipeId"
+          element={<FitnessRecipeDetail />}
+        />
+        <Route path="fitness/swaps" element={<FitnessSwaps />} />
+        <Route path="fitness/plans" element={<FitnessPlans />} />
+        <Route path="fitness/dietitians" element={<FitnessDietitians />} />
+        <Route
+          path="fitness/dietitians/:dietitianId"
+          element={<FitnessDietitianDetail />}
+        />
+        <Route path="fitness/consultations" element={<FitnessConsultations />} />
+        <Route path="fitness/diet-plans" element={<FitnessDietPlans />} />
+        <Route
+          path="fitness/diet-plans/request"
+          element={<FitnessRequestDietPlan />}
+        />
+        <Route path="fitness/profile" element={<FitnessProfile />} />
+        <Route path="fitness/profile/edit" element={<FitnessProfileEdit />} />
+        <Route path="fitness/faqs" element={<FitnessFaqs />} />
 
         <Route path=":moduleId" element={<ModulePage />} />
       </Route>
