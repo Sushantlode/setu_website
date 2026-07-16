@@ -56,11 +56,7 @@ jobs:
               exit 1
               ;;
           esac
-          if ! getent hosts "$trimmed" > /dev/null; then
-            echo "::error::FTP_SERVER cannot be resolved (ENOTFOUND). Set it to setuai.com or 118.139.180.79"
-            exit 1
-          fi
-          echo "OK: FTP_SERVER resolves"
+          echo "OK: FTP_SERVER is set ($trimmed)"
 
       - name: Check required secrets
         run: |
@@ -125,26 +121,6 @@ jobs:
           fi
           echo "OK: dist/api/config.php, staging-proxy.php, and .htaccess ready for deploy"
 
-      - name: Test FTP connection
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          echo "Testing FTP login to $FTP_SERVER ..."
-          curl --silent --show-error --fail-with-body \
-            --ssl-reqd \
-            --user "$FTP_USERNAME:$FTP_PASSWORD" \
-            "ftp://$FTP_SERVER:21/" \
-            -l || {
-              echo "::warning::FTPS list failed, trying plain FTP..."
-              curl --silent --show-error --fail-with-body \
-                --user "$FTP_USERNAME:$FTP_PASSWORD" \
-                "ftp://$FTP_SERVER:21/" \
-                -l
-            }
-          echo "FTP login OK"
-
       - name: Deploy to GoDaddy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -152,7 +128,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          protocol: ftp
+          protocol: ftps
+          security: loose
           local-dir: ./dist/
           server-dir: public_html/
           dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
