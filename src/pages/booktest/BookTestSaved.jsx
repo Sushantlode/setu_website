@@ -74,7 +74,9 @@ export default function BookTestSaved() {
                 item={item}
                 adding={busy === item._code}
                 onOpen={() =>
-                  navigate(`/app/book-tests/packages/${encodeURIComponent(item._code)}`)
+                  navigate(`/app/book-tests/packages/${encodeURIComponent(item._code)}`, {
+                    state: { package: item },
+                  })
                 }
                 onAdd={async () => {
                   setBusy(item._code)

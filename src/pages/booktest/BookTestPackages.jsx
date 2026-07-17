@@ -17,17 +17,27 @@ import BookTestShell, {
 import {
   productCode,
   productName,
+  productTestGroups,
   productTests,
   resolveProductPrice,
 } from "../../utils/booktest"
 
-function enrich(item) {
-  return {
+function enrich(item, fallbacks = {}) {
+  const merged = {
+    ...fallbacks,
     ...item,
-    _code: productCode(item),
-    _name: productName(item),
-    _price: resolveProductPrice(item),
-    _tests: productTests(item),
+    code: item?.code || fallbacks.code || productCode(item) || productCode(fallbacks),
+    name: item?.name || fallbacks.name || productName(item),
+    rate: item?.rate ?? item?.price ?? fallbacks.rate ?? fallbacks.price,
+  }
+  if (item?.price != null && merged.price == null) merged.price = item.price
+  return {
+    ...merged,
+    _code: productCode(merged) || String(fallbacks.code || "").trim(),
+    _name: productName(merged),
+    _price: resolveProductPrice(merged),
+    _tests: productTests(merged),
+    _testGroups: productTestGroups(merged),
   }
 }
 
@@ -99,7 +109,9 @@ export function BookTestPackages() {
               item={item}
               adding={addingCode === item._code}
               onOpen={() =>
-                navigate(`/app/book-tests/packages/${encodeURIComponent(item._code)}`)
+                navigate(`/app/book-tests/packages/${encodeURIComponent(item._code)}`, {
+                  state: { package: item },
+                })
               }
               onAdd={() => handleAdd(item)}
             />
@@ -113,14 +125,18 @@ export function BookTestPackages() {
 export function BookTestPackageDetail() {
   const { code } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { session } = useAuth()
   const { refreshCart } = useBookTest()
-  const [pkg, setPkg] = useState(null)
+  const seeded = location.state?.package
+  const [pkg, setPkg] = useState(() =>
+    seeded ? enrich(seeded, { code: decodeURIComponent(code || "") }) : null,
+  )
   const [similar, setSimilar] = useState([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState("")
   const [error, setError] = useState("")
-  const [openTests, setOpenTests] = useState(true)
+  const [openGroups, setOpenGroups] = useState({})
 
   useEffect(() => {
     let cancelled = false
@@ -133,14 +149,20 @@ export function BookTestPackageDetail() {
           fetchSimilarPackages(session, { userId: session.user_id, code }).catch(() => []),
         ])
         if (cancelled) return
+        // /packageDetails returns { price, packages_list } — merge with list/search seed
         const packageObj =
           detail?.package ||
           detail?.product ||
+          (detail?.packages_list || detail?.price != null ? detail : null) ||
           detail?.data ||
           detail ||
           {}
-        setPkg(enrich(packageObj))
-        setSimilar((sims || []).map(enrich))
+        const fallbacks = {
+          ...(location.state?.package || {}),
+          code: decodeURIComponent(code || ""),
+        }
+        setPkg(enrich(packageObj, fallbacks))
+        setSimilar((sims || []).map((s) => enrich(s)))
       } catch (err) {
         if (!cancelled) setError(err.message || "Could not load package")
       } finally {
@@ -151,7 +173,7 @@ export function BookTestPackageDetail() {
     return () => {
       cancelled = true
     }
-  }, [session, code])
+  }, [session, code, location.state])
 
   const handleAdd = async () => {
     if (!pkg?._code) return
@@ -200,7 +222,7 @@ export function BookTestPackageDetail() {
             <h2 className="font-display text-2xl text-setu-charcoal">{pkg._name}</h2>
             <p className="mt-2 text-2xl font-bold text-violet-700">₹{pkg._price}</p>
             <p className="mt-1 text-sm text-setu-muted">
-              includes {pkg._tests.length || "—"} tests
+              includes {pkg._tests.length ? pkg._tests.length : "—"} tests
             </p>
             <div className="mt-4 flex gap-2">
               <BookTestPrimaryButton onClick={handleAdd} disabled={busy === "add"}>
@@ -218,24 +240,43 @@ export function BookTestPackageDetail() {
           </div>
 
           <div className="rounded-3xl border border-violet-100 bg-white p-5">
-            <button
-              type="button"
-              className="flex w-full items-center justify-between font-semibold"
-              onClick={() => setOpenTests((v) => !v)}
-            >
-              <span>Tests included</span>
-              <span className="text-violet-600">{openTests ? "−" : "+"}</span>
-            </button>
-            {openTests && (
-              <ul className="mt-3 space-y-2 text-sm text-setu-muted">
-                {(pkg._tests.length ? pkg._tests : [{ name: "Details unavailable" }]).map(
-                  (t, i) => (
-                    <li key={i} className="rounded-xl bg-violet-50/60 px-3 py-2">
-                      {t?.name || t?.testName || t}
-                    </li>
-                  ),
-                )}
-              </ul>
+            <h3 className="font-semibold text-setu-charcoal">Tests included</h3>
+            {!pkg._testGroups?.length ? (
+              <p className="mt-3 text-sm text-setu-muted">No test details available for this package.</p>
+            ) : (
+              <div className="mt-3 space-y-2">
+                {pkg._testGroups.map((group, gi) => {
+                  const open = openGroups[gi] ?? gi === 0
+                  return (
+                    <div key={`${group.name}-${gi}`} className="overflow-hidden rounded-2xl bg-violet-50/60">
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left"
+                        onClick={() =>
+                          setOpenGroups((prev) => ({ ...prev, [gi]: !open }))
+                        }
+                      >
+                        <span>
+                          <span className="block text-sm font-semibold capitalize text-setu-charcoal">
+                            {group.name}
+                          </span>
+                          <span className="text-xs text-setu-muted">
+                            includes {group.tests.length} tests
+                          </span>
+                        </span>
+                        <span className="text-violet-600">{open ? "−" : "+"}</span>
+                      </button>
+                      {open && (
+                        <ul className="space-y-1.5 border-t border-violet-100/80 px-3 py-3 text-sm text-setu-muted">
+                          {group.tests.map((t, i) => (
+                            <li key={i}>• {t?.name || t}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             )}
           </div>
 
@@ -250,6 +291,7 @@ export function BookTestPackageDetail() {
                     onOpen={() =>
                       navigate(
                         `/app/book-tests/packages/${encodeURIComponent(item._code)}`,
+                        { state: { package: item } },
                       )
                     }
                     onAdd={async () => {

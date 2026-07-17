@@ -112,9 +112,66 @@ export function productName(item) {
   return String(item?.name || item?.packageName || item?.productName || "Package").trim()
 }
 
+function normalizeTestEntry(t) {
+  if (t == null) return null
+  if (typeof t === "string" || typeof t === "number") {
+    const name = String(t).trim()
+    return name ? { name } : null
+  }
+  if (typeof t !== "object") return null
+  const name = String(
+    t.name || t.testName || t.packagename || t.groupName || t.code || "",
+  ).trim()
+  if (!name) return null
+  return { ...t, name }
+}
+
+function testsFromGroup(group) {
+  const kids =
+    group?.child ||
+    group?.childs ||
+    group?.tests ||
+    group?.testList ||
+    group?.testsIncluded ||
+    []
+  if (!Array.isArray(kids)) return []
+  return kids.map(normalizeTestEntry).filter(Boolean)
+}
+
+/** Flattened test list — handles catalog `childs` and packageDetails `packages_list`. */
 export function productTests(item) {
-  const list = item?.childs || item?.child || item?.tests || item?.testList || []
-  return Array.isArray(list) ? list : []
+  const packagesList = item?.packages_list
+  if (Array.isArray(packagesList) && packagesList.length) {
+    return packagesList.flatMap(testsFromGroup)
+  }
+  const list =
+    item?.childs ||
+    item?.child ||
+    item?.tests ||
+    item?.testList ||
+    item?.testsIncluded ||
+    item?.raw?.testsIncluded ||
+    []
+  if (!Array.isArray(list)) return []
+  return list.map(normalizeTestEntry).filter(Boolean)
+}
+
+/** Grouped tests for package detail (matches RN HemogramList / packages_list). */
+export function productTestGroups(item) {
+  const packagesList = item?.packages_list
+  if (Array.isArray(packagesList) && packagesList.length) {
+    return packagesList
+      .map((g) => ({
+        name: String(
+          g?.packagename || g?.packageName || g?.groupName || g?.name || "Tests",
+        ).trim(),
+        tests: testsFromGroup(g),
+      }))
+      .filter((g) => g.tests.length > 0)
+  }
+  const flat = productTests(item)
+  if (!flat.length) return []
+  return [{ name: "Tests included", tests: flat }]
 }
 
 export function formatInr(value) {

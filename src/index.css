@@ -32,9 +32,18 @@
   box-sizing: border-box;
 }
 
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -45,10 +54,72 @@ body {
   background: var(--color-setu-cream);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 
 #root {
   min-height: 100svh;
+  min-height: 100dvh;
+}
+
+/* Safe-area helpers for app chrome / module shells */
+.app-safe-top {
+  padding-top: var(--safe-top);
+}
+
+.app-safe-bottom {
+  padding-bottom: var(--safe-bottom);
+}
+
+.app-safe-x {
+  padding-left: max(0.75rem, var(--safe-left));
+  padding-right: max(0.75rem, var(--safe-right));
+}
+
+.app-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding-top: max(0.65rem, calc(var(--safe-top) * 0.15));
+}
+
+.app-shell-main {
+  min-height: 100%;
+  padding-bottom: max(1.25rem, calc(var(--safe-bottom) + 0.5rem));
+}
+
+.app-shell-main-with-tabs {
+  padding-bottom: max(5.5rem, calc(4.75rem + var(--safe-bottom)));
+}
+
+.app-bottom-nav {
+  padding-bottom: max(0.5rem, var(--safe-bottom));
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.touch-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* avoid iOS zoom on focus */
+  }
 }
 
 ::selection {

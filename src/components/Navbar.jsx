@@ -26,6 +26,11 @@ const expandTransition = {
 
 const noTransition = { duration: 0 }
 
+const pillStyle = {
+  borderColor: "color-mix(in srgb, var(--color-setu-stone) 20%, transparent)",
+  backgroundColor: "color-mix(in srgb, var(--color-setu-charcoal) 52%, transparent)",
+}
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [compact, setCompact] = useState(false)
@@ -140,12 +145,71 @@ export default function Navbar() {
         opacity: { duration: compact ? 0.5 : 0.7, ease: easeOut },
       }
 
+  const AuthCta = ({ className = "" }) =>
+    isAuthenticated ? (
+      <Link
+        to="/app"
+        className={`btn-primary btn-primary-white inline-flex items-center gap-1.5 px-3 py-2 text-xs ${className}`}
+        onClick={() => setMobileOpen(false)}
+      >
+        <LayoutGrid size={14} />
+        App
+      </Link>
+    ) : (
+      <button
+        type="button"
+        className={`btn-primary btn-primary-white px-3 py-2 text-xs ${className}`}
+        onClick={() => openAuth("/login")}
+      >
+        Login
+      </button>
+    )
+
   return (
     <>
-      <header className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-3 sm:top-5 sm:px-4">
+      <header
+        className="pointer-events-none fixed inset-x-0 z-50 flex justify-center"
+        style={{
+          top: 0,
+          paddingTop: "max(0.75rem, env(safe-area-inset-top, 0px))",
+          paddingLeft: "max(0.75rem, env(safe-area-inset-left, 0px))",
+          paddingRight: "max(0.75rem, env(safe-area-inset-right, 0px))",
+        }}
+      >
+        {/* Mobile / tablet bar — full available width, never overflows */}
+        <nav
+          className="pointer-events-auto flex w-full max-w-lg items-center justify-between gap-2 rounded-full border px-3 py-2 backdrop-blur-md lg:hidden"
+          style={pillStyle}
+        >
+          <a
+            href="/"
+            onClick={() => handleAnchorClick("/")}
+            className="flex min-w-0 shrink-0 items-center"
+          >
+            <img
+              src={assets.logo}
+              alt="SETU"
+              className="h-7 w-auto max-w-[88px] object-contain brightness-0 invert"
+            />
+          </a>
+
+          <div className="flex shrink-0 items-center gap-1.5">
+            <AuthCta />
+            <button
+              type="button"
+              className="tap-target inline-flex items-center justify-center rounded-full p-2 text-setu-sand transition-colors hover:text-setu-beige"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </nav>
+
+        {/* Desktop floating capsule */}
         <motion.nav
           layout={scrollAnimationsEnabled}
-          className="pointer-events-auto inline-flex items-center overflow-hidden rounded-full border backdrop-blur-md"
+          className="pointer-events-auto hidden max-w-[calc(100vw-2rem)] items-center overflow-hidden rounded-full border backdrop-blur-md lg:inline-flex"
           initial={false}
           animate={{
             paddingLeft: compact ? 12 : 16,
@@ -154,10 +218,7 @@ export default function Navbar() {
             paddingBottom: compact ? 8 : 10,
             gap: compact ? 0 : 12,
           }}
-          style={{
-            borderColor: "color-mix(in srgb, var(--color-setu-stone) 20%, transparent)",
-            backgroundColor: "color-mix(in srgb, var(--color-setu-charcoal) 52%, transparent)",
-          }}
+          style={pillStyle}
           transition={{ layout: motionTransition, default: motionTransition }}
         >
           <motion.a
@@ -174,7 +235,7 @@ export default function Navbar() {
                 scale: compact ? 0.94 : 1,
                 opacity: 1,
               }}
-              className="h-7 w-auto max-w-[96px] object-contain brightness-0 invert sm:h-8 sm:max-w-[104px]"
+              className="h-8 w-auto max-w-[104px] object-contain brightness-0 invert"
               transition={motionTransition}
             />
           </motion.a>
@@ -184,7 +245,7 @@ export default function Navbar() {
             initial={false}
             animate={{
               opacity: compact ? 0 : 1,
-              maxWidth: compact ? 0 : 920,
+              maxWidth: compact ? 0 : 900,
               x: compact ? 20 : 0,
             }}
             transition={contentTransition}
@@ -195,22 +256,11 @@ export default function Navbar() {
             }}
           >
             <motion.div
-              className="flex items-center gap-2 sm:gap-3 lg:gap-4"
-              animate={{
-                scale: compact ? 0.98 : 1,
-              }}
+              className="flex items-center gap-3 xl:gap-4"
+              animate={{ scale: compact ? 0.98 : 1 }}
               transition={contentTransition}
             >
-              <button
-                type="button"
-                className="rounded-full p-1.5 text-setu-sand transition-colors hover:text-setu-beige lg:hidden"
-                onClick={() => setMobileOpen(true)}
-                aria-label="Open menu"
-              >
-                <Menu size={20} />
-              </button>
-
-              <ul className="hidden items-center gap-0.5 lg:flex">
+              <ul className="flex items-center gap-0.5">
                 {navLinksLeft.map((link) => (
                   <li key={link.href}>
                     <NavLink
@@ -222,15 +272,15 @@ export default function Navbar() {
                 ))}
               </ul>
 
-              <div className="hidden items-center gap-1 lg:flex">
+              <div className="flex items-center gap-1">
                 <ul className="flex items-center gap-0.5">
                   {navLinksRight.map((link) => (
                     <li key={link.href}>
                       <NavLink
-                      href={link.href}
-                      label={link.label}
-                      onNavigate={handleAnchorClick}
-                    />
+                        href={link.href}
+                        label={link.label}
+                        onNavigate={handleAnchorClick}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -248,23 +298,7 @@ export default function Navbar() {
                 >
                   Register
                 </button>
-                {isAuthenticated ? (
-                  <Link
-                    to="/app"
-                    className="btn-primary btn-primary-white inline-flex items-center gap-1.5 px-3.5 py-2 text-xs"
-                  >
-                    <LayoutGrid size={14} />
-                    App
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn-primary btn-primary-white px-3.5 py-2 text-xs"
-                    onClick={() => openAuth("/login")}
-                  >
-                    Login
-                  </button>
-                )}
+                <AuthCta className="ml-0.5" />
               </div>
             </motion.div>
           </motion.div>
@@ -279,9 +313,15 @@ export default function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: easeInOut }}
             className="fixed inset-0 z-[60] bg-setu-charcoal/98 backdrop-blur-sm lg:hidden"
+            style={{
+              paddingTop: "env(safe-area-inset-top, 0px)",
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              paddingLeft: "env(safe-area-inset-left, 0px)",
+              paddingRight: "env(safe-area-inset-right, 0px)",
+            }}
           >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between px-6 py-5">
+            <div className="flex h-full min-h-0 flex-col">
+              <div className="flex shrink-0 items-center justify-between px-5 py-4 sm:px-6 sm:py-5">
                 <img
                   src={assets.logo}
                   alt="SETU"
@@ -289,7 +329,7 @@ export default function Navbar() {
                 />
                 <button
                   type="button"
-                  className="rounded-full p-2 text-setu-stone"
+                  className="tap-target inline-flex items-center justify-center rounded-full p-2 text-setu-stone"
                   onClick={() => setMobileOpen(false)}
                   aria-label="Close menu"
                 >
@@ -304,7 +344,7 @@ export default function Navbar() {
                   hidden: {},
                   visible: { transition: { staggerChildren: 0.06 } },
                 }}
-                className="flex flex-1 flex-col items-center justify-center gap-6 px-6"
+                className="flex flex-1 flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-4"
               >
                 {[...navLinksLeft, ...navLinksRight].map((link) => (
                   <motion.li
@@ -331,11 +371,11 @@ export default function Navbar() {
                     hidden: { opacity: 0, y: 16 },
                     visible: { opacity: 1, y: 0 },
                   }}
-                  className="flex flex-col items-center gap-3 pt-2"
+                  className="flex w-full max-w-xs flex-col items-stretch gap-3 pt-2"
                 >
                   <a
                     href="#contact"
-                    className="nav-link text-lg"
+                    className="nav-link justify-center text-lg"
                     onClick={() => {
                       handleAnchorClick("#contact")
                       setMobileOpen(false)
@@ -345,13 +385,17 @@ export default function Navbar() {
                   </a>
                   <button
                     type="button"
-                    className="nav-link text-lg"
+                    className="nav-link justify-center text-lg"
                     onClick={() => openAuth("/register")}
                   >
                     Register
                   </button>
                   {isAuthenticated ? (
-                    <Link to="/app" className="btn-primary btn-primary-white inline-flex items-center gap-2">
+                    <Link
+                      to="/app"
+                      className="btn-primary btn-primary-white inline-flex items-center justify-center gap-2"
+                      onClick={() => setMobileOpen(false)}
+                    >
                       <LayoutGrid size={16} />
                       Open App
                     </Link>

@@ -168,11 +168,17 @@ export default function BookTestHome() {
                   type="button"
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm hover:bg-violet-50"
                   onClick={() =>
-                    navigate(`/app/book-tests/packages/${encodeURIComponent(s._code)}`)
+                    navigate(`/app/book-tests/packages/${encodeURIComponent(s._code)}`, {
+                      state: { package: s },
+                    })
                   }
                 >
                   <span className="line-clamp-1 font-medium">{s._name}</span>
-                  <span style={{ color: ACCENT }}>₹{s._price}</span>
+                  {s._price > 0 ? (
+                    <span className="shrink-0 pl-3 font-semibold" style={{ color: ACCENT }}>
+                      ₹{s._price}
+                    </span>
+                  ) : null}
                 </button>
               ))}
             {!searching && suggestions.length === 0 && (
@@ -287,6 +293,7 @@ export default function BookTestHome() {
                       onOpen={() =>
                         navigate(
                           `/app/book-tests/packages/${encodeURIComponent(item._code)}`,
+                          { state: { package: item } },
                         )
                       }
                       onAdd={() => handleAdd(item)}

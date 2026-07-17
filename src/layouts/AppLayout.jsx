@@ -199,23 +199,28 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-setu-cream">
+    <div className="flex min-h-svh min-h-dvh flex-col overflow-x-hidden bg-setu-cream">
       <header
-        className="sticky top-0 z-40 border-b text-setu-sand shadow-sm backdrop-blur-md"
+        className="app-safe-top sticky top-0 z-40 border-b text-setu-sand shadow-sm backdrop-blur-md"
         style={{
           backgroundColor: "color-mix(in srgb, var(--color-setu-charcoal) 92%, transparent)",
           borderColor: "color-mix(in srgb, var(--color-setu-stone) 20%, transparent)",
         }}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
-          <Link to="/app" className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3 lg:px-8">
+          <Link
+            to="/app"
+            className="flex min-w-0 flex-1 items-center gap-2 sm:max-w-[40%] sm:flex-none sm:gap-3"
+          >
             <img
               src={assets.logo}
               alt="SETU"
               className="h-7 w-auto shrink-0 brightness-0 invert sm:h-8"
             />
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-setu-sand">{displayName}</p>
+              <p className="truncate text-sm font-medium text-setu-sand">
+                {displayName}
+              </p>
               {session?.uhid ? (
                 <button
                   type="button"
@@ -224,7 +229,7 @@ export default function AppLayout() {
                     e.stopPropagation()
                     copyUhid()
                   }}
-                  className="mt-0.5 inline-flex max-w-full items-center gap-1 text-xs text-setu-sand/70 transition-colors hover:text-setu-beige"
+                  className="mt-0.5 inline-flex max-w-full items-center gap-1 text-[11px] text-setu-sand/70 transition-colors hover:text-setu-beige sm:text-xs"
                   title="Copy UHID"
                 >
                   <span className="truncate">UHID {session.uhid}</span>
@@ -235,26 +240,26 @@ export default function AppLayout() {
                   )}
                 </button>
               ) : session?.mobile ? (
-                <p className="truncate text-xs text-setu-sand/70">+91 {session.mobile}</p>
+                <p className="truncate text-[11px] text-setu-sand/70 sm:text-xs">
+                  +91 {session.mobile}
+                </p>
               ) : null}
             </div>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 md:flex" aria-label="App">
+          {/* Desktop / tablet nav */}
+          <nav
+            className="ml-auto hidden min-w-0 items-center gap-1 md:flex"
+            aria-label="App"
+          >
             {navTabs.map((tab) => renderNavLink(tab))}
             {secondaryTabs.map((tab) => renderNavLink(tab))}
           </nav>
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            {/* Mobile: compact icon nav */}
-            <nav className="flex items-center gap-0.5 md:hidden" aria-label="App">
-              {navTabs.map((tab) => renderNavLink(tab, { iconOnly: true }))}
-            </nav>
-
             <Link
               to="/app/sos"
-              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+              className="tap-target inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
               style={{ backgroundColor: SOS_RED }}
               aria-label="SOS Help"
             >
@@ -270,22 +275,22 @@ export default function AppLayout() {
               108
             </a>
 
-            <Link to="/" className={`${mutedLinkClass} hidden sm:inline`}>
+            <Link to="/" className={`${mutedLinkClass} hidden lg:inline`}>
               Website
             </Link>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 rounded-full border border-setu-stone/25 px-2.5 py-2 text-sm font-medium text-setu-sand transition-colors hover:border-setu-coral hover:bg-setu-coral/10 hover:text-setu-beige"
+              className="tap-target hidden items-center justify-center gap-1.5 rounded-full border border-setu-stone/25 px-2.5 py-2 text-sm font-medium text-setu-sand transition-colors hover:border-setu-coral hover:bg-setu-coral/10 hover:text-setu-beige md:inline-flex"
             >
               <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden lg:inline">Logout</span>
             </button>
 
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-full p-2 text-setu-sand transition-colors hover:bg-setu-coral/10 hover:text-setu-beige md:hidden"
+              className="tap-target inline-flex items-center justify-center rounded-full p-2 text-setu-sand transition-colors hover:bg-setu-coral/10 hover:text-setu-beige md:hidden"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               onClick={() => setMenuOpen((o) => !o)}
@@ -295,32 +300,43 @@ export default function AppLayout() {
           </div>
         </div>
 
-        {/* Mobile overflow menu */}
+        {/* Mobile menu — primary + secondary links */}
         {menuOpen && (
           <div
             className="border-t px-3 py-3 md:hidden"
             style={{
-              borderColor: "color-mix(in srgb, var(--color-setu-stone) 20%, transparent)",
+              borderColor:
+                "color-mix(in srgb, var(--color-setu-stone) 20%, transparent)",
+              paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
             }}
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
+              {navTabs.map((tab) => renderNavLink(tab))}
               {secondaryTabs.map((tab) => renderNavLink(tab))}
               <Link
                 to="/"
                 onClick={() => setMenuOpen(false)}
-                className={`${mutedLinkClass} sm:hidden`}
+                className={mutedLinkClass}
               >
                 Website
               </Link>
               <a href="tel:108" className={mutedLinkClass}>
                 Call 108 Ambulance
               </a>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={`${mutedLinkClass} justify-start`}
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
             </div>
           </div>
         )}
       </header>
 
-      <div className="flex-1">
+      <div className="min-w-0 flex-1 overflow-x-hidden">
         <Outlet />
       </div>
     </div>

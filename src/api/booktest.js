@@ -107,7 +107,42 @@ export async function searchBookTests(session, searchInput) {
   })
   assertOk(response, data, "Search failed")
   const raw = unwrap(data)
-  return raw?.products || raw?.results || (Array.isArray(raw) ? raw : [])
+  const list = raw?.products || raw?.results || (Array.isArray(raw) ? raw : [])
+
+  // Older /search responses are { packageName, code } only (no rate/price).
+  // Attach price from packageDetails so search UI can show ₹ correctly.
+  const top = (list || []).slice(0, 8)
+  const enriched = await Promise.all(
+    top.map(async (item) => {
+      const code = String(item?.code || item?.product_code || item?.productCode || "").trim()
+      const name = item?.name || item?.packageName || item?.productName
+      const hasPrice =
+        item?.price != null ||
+        item?.rate != null ||
+        item?.offer_price != null ||
+        item?.selling_price != null
+      if (!code || hasPrice) {
+        return name && !item?.name ? { ...item, name } : item
+      }
+      try {
+        const detail = await fetchPackageDetails(session, {
+          userId: session?.user_id,
+          code,
+        })
+        const price = detail?.price
+        return {
+          ...item,
+          name,
+          packageName: item?.packageName || name,
+          price: price != null ? price : item.price,
+          rate: item.rate || (price != null ? { b2C: price } : undefined),
+        }
+      } catch {
+        return name && !item?.name ? { ...item, name } : item
+      }
+    }),
+  )
+  return enriched
 }
 
 export async function fetchPackageDetails(session, { userId, code }) {

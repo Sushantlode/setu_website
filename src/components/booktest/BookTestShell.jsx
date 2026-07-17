@@ -19,16 +19,18 @@ export default function BookTestShell({
 
   return (
     <div className="min-h-svh bg-[#F7F5FF]">
-      <header className="sticky top-0 z-20 border-b border-violet-100 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
+      <header className="app-shell-header sticky top-0 z-20 border-b border-violet-100 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
           <Link
             to={backTo}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-violet-50 text-violet-800 transition hover:bg-violet-100"
+            className="tap-target inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-800 transition hover:bg-violet-100"
             aria-label="Back"
           >
             <ArrowLeft size={18} />
           </Link>
-          <h1 className="flex-1 font-display text-xl text-setu-charcoal">{title}</h1>
+          <h1 className="min-w-0 flex-1 truncate font-display text-lg text-setu-charcoal sm:text-xl">
+            {title}
+          </h1>
           {!hideNav && (
             <div className="flex items-center gap-1">
               <Link
@@ -64,7 +66,9 @@ export default function BookTestShell({
           )}
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-5 pb-24">{children}</main>
+      <main className="app-shell-main mx-auto max-w-5xl px-3 py-4 sm:px-4 sm:py-5">
+        {children}
+      </main>
     </div>
   )
 }

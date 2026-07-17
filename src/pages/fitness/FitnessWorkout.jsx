@@ -87,13 +87,13 @@ export default function FitnessWorkout() {
         </Link>
       }
     >
-      <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
+      <div className="touch-scroll -mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
         {muscles.map((m) => (
           <button
             key={m}
             type="button"
             onClick={() => setSelected(m)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
+            className={`min-h-9 shrink-0 snap-start rounded-full px-3 py-1.5 text-xs font-semibold ${
               selected === m
                 ? "bg-[#10B981] text-white"
                 : "bg-white text-[#374151] ring-1 ring-[#E5E7EB]"

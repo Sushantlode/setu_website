@@ -14,8 +14,8 @@ export function MentalShell({
   const navigate = useNavigate()
 
   return (
-    <main className="min-h-full bg-[#F4FBF9]">
-      <div className={`mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-6 lg:max-w-5xl lg:px-8 ${className}`}>
+    <main className="app-shell-main bg-[#F4FBF9]">
+      <div className={`mx-auto max-w-3xl px-3 py-3 sm:px-6 sm:py-6 lg:max-w-5xl lg:px-8 ${className}`}>
         <div className="mb-4 flex items-center justify-between gap-3">
           <button
             type="button"
@@ -23,7 +23,7 @@ export function MentalShell({
               if (backTo) navigate(backTo)
               else navigate(-1)
             }}
-            className="inline-flex items-center gap-2 text-sm text-[#6B7280] transition-colors hover:text-[#0F172A]"
+            className="tap-target inline-flex items-center gap-2 text-sm text-[#6B7280] transition-colors hover:text-[#0F172A]"
           >
             <ArrowLeft size={16} />
             Back

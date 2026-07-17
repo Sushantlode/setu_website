@@ -185,13 +185,13 @@ export default function FitnessHome() {
         </h2>
       </div>
 
-      <div className="-mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1">
+      <div className="touch-scroll -mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1">
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
           <button
             key={d}
             type="button"
             onClick={() => setSelectedDay(d)}
-            className={`flex h-14 w-12 shrink-0 flex-col items-center justify-center rounded-xl text-sm ${
+            className={`flex h-14 w-12 shrink-0 snap-start flex-col items-center justify-center rounded-xl text-sm ${
               selectedDay === d
                 ? "bg-[#10B981] font-semibold text-white"
                 : "bg-white text-[#374151] ring-1 ring-[#E5E7EB]"
@@ -217,7 +217,7 @@ export default function FitnessHome() {
             </p>
           )}
 
-          <div className="mb-4 grid grid-cols-3 gap-3">
+          <div className="mb-4 grid grid-cols-3 gap-2 sm:gap-3">
             <StatCard
               icon={Flame}
               label="Calories"
@@ -238,26 +238,26 @@ export default function FitnessHome() {
             />
           </div>
 
-          <div className="mb-4 rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-sm">
+          <div className="mb-4 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-sm sm:p-4">
             <p className="text-sm font-semibold text-[#111827]">Log steps</p>
             <p className="mt-1 text-xs text-[#6B7280]">
               Pedometer isn’t available on web — enter steps manually for {dayKey}.
             </p>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <input
                 inputMode="numeric"
                 value={stepsInput}
                 onChange={(e) =>
                   setStepsInput(e.target.value.replace(/\D/g, "").slice(0, 6))
                 }
-                className="flex-1 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:border-[#10B981]"
+                className="min-h-11 flex-1 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:border-[#10B981]"
                 placeholder="Steps"
               />
               <button
                 type="button"
                 disabled={savingSteps}
                 onClick={saveSteps}
-                className="rounded-xl bg-[#10B981] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                className="min-h-11 rounded-xl bg-[#10B981] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 sm:shrink-0"
               >
                 Save
               </button>
