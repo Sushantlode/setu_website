@@ -568,6 +568,10 @@ export const deployments = [
   },
 ]
 
+function pilotVideo(filename) {
+  return `/videos/Pilots/${filename}`
+}
+
 export const projects = [
   {
     id: "sundargarh",
@@ -579,6 +583,7 @@ export const projects = [
     image: assets.projects.sundargarh,
     description:
       "Free preventive health check-ups for citizens. Digitization of Matrujyoti with cloud-connected mobile app and real-time analytics.",
+    video: pilotVideo("cm-dhami-uttarakhand.mp4"),
   },
   {
     id: "matrujyoti",
@@ -590,6 +595,7 @@ export const projects = [
     image: assets.projects.matrujyoti,
     description:
       "Mother and child health tracking system. MDR (Mother Death Review) showed notable decrease during the Matrujyoti program.",
+    video: pilotVideo("pmc-ganesh-salunkhe.mp4"),
   },
   {
     id: "nalanda",
@@ -601,6 +607,7 @@ export const projects = [
     image: assets.projects.nalanda,
     description:
       "Preventive health check-ups with cloud-connected mobile health app and real-time data analytics.",
+    video: pilotVideo("pmc-shrutika-kulkarni.mp4"),
   },
   {
     id: "khatima",
@@ -611,6 +618,7 @@ export const projects = [
     statLabel: "In One Day",
     image: assets.projects.khatima,
     description: "All preventive checkups completed in a single day for local citizens.",
+    video: pilotVideo("sundargarh.mp4"),
   },
   {
     id: "pune",
@@ -621,6 +629,7 @@ export const projects = [
     statLabel: "Employees Screened",
     image: assets.projects.pune,
     description: "Preventive health check-up camp for Pune Municipal Corporation employees in a single day.",
+    video: pilotVideo("pmc-rupali-dhadve.mp4"),
   },
 ]
 

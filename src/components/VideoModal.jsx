@@ -3,10 +3,20 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import { Skeleton } from "./Skeleton"
 
-export default function VideoModal({ open, onClose, src, title }) {
+export default function VideoModal({ open, onClose, src, title, sources }) {
   const videoRef = useRef(null)
   const [videoReady, setVideoReady] = useState(false)
   const [videoError, setVideoError] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const playlist =
+    sources?.length > 0
+      ? sources
+      : src
+        ? [{ src, label: "Video" }]
+        : []
+
+  const current = playlist[activeIndex]
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : ""
@@ -17,10 +27,19 @@ export default function VideoModal({ open, onClose, src, title }) {
 
   useEffect(() => {
     if (!open) {
+      setActiveIndex(0)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) {
       setVideoReady(false)
       setVideoError(false)
       return undefined
     }
+
+    setVideoReady(false)
+    setVideoError(false)
 
     const video = videoRef.current
     if (!video) return undefined
@@ -44,11 +63,11 @@ export default function VideoModal({ open, onClose, src, title }) {
       video.removeEventListener("error", handleError)
       video.pause()
     }
-  }, [open, src])
+  }, [open, current?.src])
 
   return (
     <AnimatePresence>
-      {open && (
+      {open && current && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -74,6 +93,26 @@ export default function VideoModal({ open, onClose, src, title }) {
                 <X size={20} />
               </button>
             </div>
+
+            {playlist.length > 1 && (
+              <div className="flex flex-wrap gap-2 border-b border-white/10 px-5 py-3">
+                {playlist.map((item, index) => (
+                  <button
+                    key={item.src}
+                    type="button"
+                    onClick={() => setActiveIndex(index)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                      index === activeIndex
+                        ? "bg-setu-coral text-setu-cream"
+                        : "bg-white/10 text-setu-stone hover:bg-white/15 hover:text-setu-cream"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="relative aspect-video w-full bg-black">
               {!videoReady && !videoError && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3">
@@ -90,8 +129,8 @@ export default function VideoModal({ open, onClose, src, title }) {
               )}
               <video
                 ref={videoRef}
-                key={src}
-                src={src}
+                key={current.src}
+                src={current.src}
                 controls
                 playsInline
                 preload="auto"
