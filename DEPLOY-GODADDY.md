@@ -28,27 +28,31 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 
 | Secret | Value | Required |
 |--------|-------|----------|
-| `FTP_SERVER` | `ftp.setuai.com` (from cPanel → FTP) | Yes |
-| `FTP_USERNAME` | Your cPanel FTP username | Yes |
-| `FTP_PASSWORD` | Your cPanel FTP password | Yes |
-| `FTP_SERVER_DIR` | `/public_html/` (default) | Optional |
-| `FTP_PORT` | `21` | Optional |
+| `FTP_SERVER` | `184.168.116.6` (GoDaddy hosting IP for nkginternational.com account) | Yes |
+| `FTP_USERNAME` | `my14ac4b46r3` (cPanel login from GoDaddy → Hosting → Manage) | Yes |
+| `FTP_PASSWORD` | Your cPanel password | Yes |
 | `SMTP_PASS` | Password for `no_reply@setuai.com` | Yes |
 | `SMTP_USER` | `no_reply@setuai.com` | Optional |
 | `SMTP_HOST` | `setuai.com` | Optional |
 | `SMTP_PORT` | `465` | Optional |
 | `SMTP_FROM` | `Setu <no_reply@setuai.com>` | Optional |
 | `CONTACT_TO_EMAIL` | `support@setuai.com` | Optional |
-| `STAGING_API_BASE` | `https://api.setuai.com` (API proxy upstream) | Optional |
+| `STAGING_API_BASE` | `https://staging.setuai.com` (API proxy upstream) | Optional |
+
+**Do NOT set `FTP_SERVER_DIR`.** Deploy always targets `public_html/setuai.com/` only.  
+**Never deploy to `public_html/`** — that folder serves **nkginternational.com**.
 
 **Never commit passwords to git.** Use GitHub Secrets only.
 
 ### 3. Find FTP credentials in GoDaddy
 
-cPanel → **FTP Accounts** or **FTP Manager**:
-- **Server:** often `ftp.setuai.com`
-- **Username:** your cPanel username (may look like `setuai` or `setuai@setuai.com`)
-- **Password:** FTP password (can reset in cPanel)
+**Hosting** → **nkginternational.com** → **Manage** → note **cPanel login** and **IP Address**:
+
+- **FTP_SERVER:** `184.168.116.6`
+- **FTP_USERNAME:** `my14ac4b46r3` (your cPanel login)
+- **FTP_PASSWORD:** cPanel password (change via **Change** next to cPanel password)
+
+setuai.com is an **addon domain**; files deploy to `public_html/setuai.com/`.
 
 ### 4. First deploy (replace existing site)
 

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       clean_slate:
-        description: "Delete all files in public_html before deploy (first-time full replace)"
+        description: "Delete all files in public_html/setuai.com before deploy (first-time full replace)"
         required: false
         default: "false"
         type: choice
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -52,7 +52,7 @@ jobs:
               exit 1
               ;;
             ftp.setuai.com)
-              echo "::error::ftp.setuai.com does not exist in DNS. Set FTP_SERVER to setuai.com or 118.139.180.79"
+              echo "::error::ftp.setuai.com does not exist in DNS. Use 184.168.116.6"
               exit 1
               ;;
           esac
@@ -78,6 +78,22 @@ jobs:
           if [ "$missing" -eq 1 ]; then
             exit 1
           fi
+          if [ -n "${{ secrets.FTP_SERVER_DIR }}" ]; then
+            echo "::warning::FTP_SERVER_DIR secret is set but ignored. Delete it from GitHub Secrets — deploy always uses public_html/setuai.com/"
+          fi
+
+      - name: Test FTP login (setuai.com folder)
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          echo "Testing FTPS login and public_html/setuai.com access..."
+          curl -k --ssl-reqd --connect-timeout 30 --fail-with-body \
+            --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            "ftp://$FTP_SERVER:21/public_html/setuai.com/" \
+            -l | head -10
+          echo "OK: FTP credentials work for public_html/setuai.com/"
 
       - name: Generate PHP config from secrets
         env:
@@ -95,13 +111,12 @@ jobs:
         run: node scripts/generate-config-php.mjs
 
       - name: Build production bundle
-        # Relative VITE_* bases (empty VITE_API_URL) — /auth etc. proxied by PHP on GoDaddy
         run: npm run build
         env:
           VITE_API_URL: ""
           VITE_CONTACT_API_URL: ""
 
-      - name: Verify config.php and API proxy in dist
+      - name: Verify dist before deploy
         run: |
           if [ ! -f dist/api/config.php ]; then
             echo "::error::dist/api/config.php missing after build"
@@ -119,7 +134,8 @@ jobs:
             echo "::error::dist/.htaccess missing staging-proxy rewrite rules"
             exit 1
           fi
-          echo "OK: dist/api/config.php, staging-proxy.php, and .htaccess ready for deploy"
+          echo "Deploying $(find dist -type f | wc -l) files to public_html/setuai.com/"
+          du -sh dist
 
       - name: Deploy to GoDaddy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -131,8 +147,8 @@ jobs:
           protocol: ftps
           security: loose
           local-dir: ./dist/
-          # setuai.com addon docroot — NOT public_html/ (that serves nkginternational.com)
-          server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/setuai.com/' }}
+          # Hardcoded — nkginternational.com uses public_html/ (must never deploy there)
+          server-dir: public_html/setuai.com/
           dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
           exclude: |
             **/.git*
@@ -141,7 +157,25 @@ jobs:
             DEPLOY-CHECKLIST.txt
           log-level: verbose
 
+      - name: Verify live site
+        run: |
+          echo "Waiting for CDN/hosting to pick up changes..."
+          sleep 15
+          for i in 1 2 3 4 5; do
+            if curl -sf "https://setuai.com/api/health" | grep -q '"ok":true'; then
+              echo "OK: https://setuai.com/api/health"
+              curl -sfI "https://setuai.com/" | head -5
+              exit 0
+            fi
+            echo "Attempt $i failed — retrying in 15s..."
+            sleep 15
+          done
+          echo "::error::Deploy finished but https://setuai.com/api/health did not return ok:true"
+          curl -s "https://setuai.com/api/health" || true
+          exit 1
+
       - name: Deployment summary
         run: |
-          echo "Deployed to https://setuai.com"
+          echo "Deployed to https://setuai.com (public_html/setuai.com/)"
           echo "Health check: https://setuai.com/api/health"
+          echo "nkginternational.com is NOT modified by this workflow"
