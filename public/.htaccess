@@ -37,6 +37,11 @@
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 
+  # Vite emits crossorigin on CSS/JS; allow browsers to load same-origin assets.
+  <FilesMatch "\.(css|js|mjs|woff2?|ttf|svg|png|webp|jpg|jpeg|gif|mp4|ico)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+
   # Never cache the SPA shell — hashed /assets/* stay long-lived via Expires.
   # Caching HTML left post-deploy browsers on old JS (pay-in-app complete page)
   # for up to an hour.

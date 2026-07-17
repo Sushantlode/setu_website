@@ -31,7 +31,19 @@ export default defineConfig(({ mode }) => {
   )
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'setu-html-asset-fixes',
+        transformIndexHtml(html) {
+          // crossorigin breaks CSS on some Apache/GoDaddy setups without CORS headers
+          return html
+            .replace(/\s+crossorigin/g, '')
+            .replace(/(\/(?:assets\/[^"']+\.(?:css|js)|favicon[^"']*))"/g, '$1?v=20260717"')
+        },
+      },
+    ],
     server: {
       proxy: {
         '/api': {
