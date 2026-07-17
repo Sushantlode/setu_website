@@ -595,7 +595,6 @@ export const projects = [
     image: assets.projects.matrujyoti,
     description:
       "Mother and child health tracking system. MDR (Mother Death Review) showed notable decrease during the Matrujyoti program.",
-    video: pilotVideo("pmc-ganesh-salunkhe.mp4"),
   },
   {
     id: "nalanda",
@@ -607,7 +606,7 @@ export const projects = [
     image: assets.projects.nalanda,
     description:
       "Preventive health check-ups with cloud-connected mobile health app and real-time data analytics.",
-    video: pilotVideo("pmc-shrutika-kulkarni.mp4"),
+    video: pilotVideo("sundargarh.mp4"),
   },
   {
     id: "khatima",
@@ -618,7 +617,6 @@ export const projects = [
     statLabel: "In One Day",
     image: assets.projects.khatima,
     description: "All preventive checkups completed in a single day for local citizens.",
-    video: pilotVideo("sundargarh.mp4"),
   },
   {
     id: "pune",
@@ -629,7 +627,11 @@ export const projects = [
     statLabel: "Employees Screened",
     image: assets.projects.pune,
     description: "Preventive health check-up camp for Pune Municipal Corporation employees in a single day.",
-    video: pilotVideo("pmc-rupali-dhadve.mp4"),
+    videos: [
+      { label: "Mr. Ganesh Salunkhe", src: pilotVideo("pmc-ganesh-salunkhe.mp4") },
+      { label: "Ms. Shrutika Kulkarni", src: pilotVideo("pmc-shrutika-kulkarni.mp4") },
+      { label: "Ms. Rupali Dhadve", src: pilotVideo("pmc-rupali-dhadve.mp4") },
+    ],
   },
 ]
 
