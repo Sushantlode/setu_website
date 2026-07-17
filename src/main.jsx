@@ -5,12 +5,14 @@ import "./index.css"
 import App from "./App.jsx"
 import { AuthProvider } from "./context/AuthContext.jsx"
 import { ToastProvider } from "./components/ui/Toast.jsx"
+import MobileStatusBar from "./components/MobileStatusBar.jsx"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
+          <MobileStatusBar />
           <App />
         </ToastProvider>
       </AuthProvider>

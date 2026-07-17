@@ -5,6 +5,7 @@ import { deployments, setuPlatform } from "../data/content"
 import { getIndiaStatePaths, latLngToMapSvg, MAP_VIEWBOX } from "../data/indiaMap"
 import FadeIn from "./FadeIn"
 import OptimizedImage from "./OptimizedImage"
+import DeploymentFieldPhotos from "./DeploymentFieldPhotos"
 
 function getStateStyle(stateId, { activeStateId, hoveredStateId, hasDeployment }) {
   const isActive = stateId === activeStateId
@@ -169,7 +170,7 @@ function DeploymentPanel({ item, isPreview, isPlatform }) {
           </div>
         )}
 
-        {item.gallery?.length > 1 && (
+        {item.gallery?.length > 1 && !item.fieldGallery && (
           <div className="mt-4 grid grid-cols-3 gap-2">
             {item.gallery.slice(0, 3).map((src) => (
               <div key={src} className="aspect-[4/3] overflow-hidden rounded-lg">
@@ -182,6 +183,10 @@ function DeploymentPanel({ item, isPreview, isPlatform }) {
               </div>
             ))}
           </div>
+        )}
+
+        {item.fieldGallery && (
+          <DeploymentFieldPhotos manifestUrl={item.fieldGallery} title="Field photos" />
         )}
       </div>
     </motion.div>

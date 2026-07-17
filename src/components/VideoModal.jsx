@@ -72,7 +72,13 @@ export default function VideoModal({ open, onClose, src, title, sources }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-setu-charcoal/90 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-setu-charcoal/90 backdrop-blur-sm"
+          style={{
+            paddingTop: "max(1rem, env(safe-area-inset-top, 0px))",
+            paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+            paddingLeft: "max(1rem, env(safe-area-inset-left, 0px))",
+            paddingRight: "max(1rem, env(safe-area-inset-right, 0px))",
+          }}
           onClick={onClose}
         >
           <motion.div

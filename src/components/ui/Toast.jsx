@@ -73,7 +73,8 @@ export function ToastProvider({ children, defaultDuration = 3200 }) {
     <ToastContext.Provider value={api}>
       {children}
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-4 z-[100] flex flex-col items-center gap-2 px-4 sm:bottom-6 sm:items-end sm:px-6"
+        className="pointer-events-none fixed inset-x-0 z-[130] flex flex-col items-center gap-2 px-4 sm:items-end sm:px-6"
+        style={{ bottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
         aria-live="polite"
         aria-relevant="additions"
       >

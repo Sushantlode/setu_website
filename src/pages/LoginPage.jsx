@@ -108,8 +108,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-svh bg-[#F7FAFF]">
-      <div className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-4 py-10">
+    <div className="page-safe-top page-safe-bottom min-h-svh bg-[#F7FAFF]">
+      <div className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-4 py-10 app-safe-x">
         <Link
           to="/"
           className="mb-8 inline-flex items-center gap-2 text-sm text-setu-muted transition-colors hover:text-setu-charcoal"

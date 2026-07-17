@@ -37,6 +37,39 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  --status-bar-top-bg: var(--color-setu-charcoal);
+  --status-bar-bottom-bg: var(--color-setu-cream);
+}
+
+/* iOS notch / Android status bar + home indicator fills */
+.mobile-status-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 120;
+  pointer-events: none;
+}
+
+.mobile-status-bar--top {
+  top: 0;
+  height: var(--safe-top);
+  background: var(--status-bar-top-bg);
+}
+
+.mobile-status-bar--bottom {
+  bottom: 0;
+  height: var(--safe-bottom);
+  background: var(--status-bar-bottom-bg);
+}
+
+@supports (padding: max(0px)) {
+  .page-safe-top {
+    padding-top: max(0px, var(--safe-top));
+  }
+
+  .page-safe-bottom {
+    padding-bottom: max(0px, var(--safe-bottom));
+  }
 }
 
 html {
@@ -81,7 +114,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding-top: max(0.65rem, calc(var(--safe-top) * 0.15));
+  padding-top: max(0.65rem, var(--safe-top));
 }
 
 .app-shell-main {

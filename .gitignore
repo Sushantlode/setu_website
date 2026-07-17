@@ -20,6 +20,9 @@ public/api/data/usage_*.json
 public/videos/setu-story.mp4
 public/videos/setu-story-web.mp4
 
+# Khatima field originals (~3 GB) — thumbs + manifest deploy via git; upload originals via FTP for full-size lightbox
+public/assets/public/khatima/originals/
+
 # OS / editor
 .DS_Store
 .vscode/*

@@ -434,17 +434,18 @@ export const deployments = [
   {
     id: "sundargarh",
     name: "eSwasthya",
-    location: "Sundargarh, Odisha",
-    state: "Odisha",
+    location: "Khatima, Uttarakhand · 2024",
+    state: "Uttarakhand",
     year: "2024",
     impact: "30,000+ citizens screened",
     tagline: "State-government preventive care at scale",
     description:
       "Partnership with Odisha government delivering free preventive health check-ups across Sundargarh district. ASHA workers use SETU screening kits while citizens access results, follow-ups, and maternal records through the mobile app.",
-    lat: 22.12,
-    lng: 84.04,
-    stateId: "or",
+    lat: 28.92,
+    lng: 79.97,
+    stateId: "ut",
     image: assets.projects.sundargarh,
+    fieldGallery: "/assets/public/khatima/manifest.json",
     gallery: [
       assets.projects.sundargarh,
       assets.preventive.ehealthCenter,
@@ -576,7 +577,7 @@ export const projects = [
   {
     id: "sundargarh",
     title: "eSwasthya – Preventive Health Screenings",
-    location: "Sundargarh, Odisha",
+    location: "Khatima, Uttarakhand",
     year: "2024",
     stat: "30,000",
     statLabel: "Citizens Screened",
@@ -611,7 +612,7 @@ export const projects = [
   {
     id: "khatima",
     title: "Preventive Checkups",
-    location: "Khatima, Uttarakhand",
+    location: "Sundargarh, Odisha",
     year: "2024",
     stat: "1,000",
     statLabel: "In One Day",
