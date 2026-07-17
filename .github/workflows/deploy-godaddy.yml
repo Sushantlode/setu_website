@@ -131,7 +131,8 @@ jobs:
           protocol: ftps
           security: loose
           local-dir: ./dist/
-          server-dir: public_html/
+          # setuai.com addon docroot — NOT public_html/ (that serves nkginternational.com)
+          server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/setuai.com/' }}
           dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
           exclude: |
             **/.git*
