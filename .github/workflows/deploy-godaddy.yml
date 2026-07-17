@@ -159,23 +159,23 @@ jobs:
 
       - name: Verify live site
         run: |
-          echo "Waiting for CDN/hosting to pick up changes..."
+          echo "Waiting for hosting to pick up changes..."
           sleep 15
           for i in 1 2 3 4 5; do
-            if curl -sf "https://setuai.com/api/health" | grep -q '"ok":true'; then
-              echo "OK: https://setuai.com/api/health"
+            if curl -sf "https://setuai.com/api/health.php" | grep -q '"ok":true'; then
+              echo "OK: https://setuai.com/api/health.php"
               curl -sfI "https://setuai.com/" | head -5
               exit 0
             fi
             echo "Attempt $i failed — retrying in 15s..."
             sleep 15
           done
-          echo "::error::Deploy finished but https://setuai.com/api/health did not return ok:true"
-          curl -s "https://setuai.com/api/health" || true
+          echo "::error::Deploy finished but https://setuai.com/api/health.php did not return ok:true"
+          curl -s "https://setuai.com/api/health.php" || true
           exit 1
 
       - name: Deployment summary
         run: |
           echo "Deployed to https://setuai.com (public_html/setuai.com/)"
-          echo "Health check: https://setuai.com/api/health"
+          echo "Health check: https://setuai.com/api/health.php"
           echo "nkginternational.com is NOT modified by this workflow"
