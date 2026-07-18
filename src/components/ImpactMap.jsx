@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react"
+import { useMemo, useState, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MapPin, Smartphone, CheckCircle2 } from "lucide-react"
 import { deployments, setuPlatform } from "../data/content"
@@ -124,12 +124,14 @@ function DeploymentPanel({ item, isPreview, isPlatform }) {
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-setu-teal-deep/85 to-transparent" />
-        <div className="absolute bottom-4 left-5 right-5">
-          <div className="flex items-center gap-2 text-setu-coral">
-            <MapPin size={16} />
-            <span className="text-sm font-medium">{item.location}</span>
+        <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-5">
+          <div className="flex items-start gap-2 text-setu-coral">
+            <MapPin size={16} className="mt-0.5 shrink-0" />
+            <span className="text-xs font-medium leading-snug break-words sm:text-sm">
+              {item.location}
+            </span>
           </div>
-          <h3 className="mt-1 font-serif text-xl text-setu-cream">{item.name}</h3>
+          <h3 className="mt-1 font-serif text-lg text-setu-cream sm:text-xl">{item.name}</h3>
           {item.tagline && (
             <p className="mt-0.5 text-xs text-setu-stone/70">{item.tagline}</p>
           )}
@@ -141,9 +143,9 @@ function DeploymentPanel({ item, isPreview, isPlatform }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-6 sm:p-8">
+      <div className="flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
         <p className="text-sm text-setu-stone/60">{item.year}</p>
-        <p className="mt-1 font-serif text-2xl text-setu-coral sm:text-3xl">{item.impact}</p>
+        <p className="mt-1 font-serif text-xl text-setu-coral sm:text-2xl lg:text-3xl">{item.impact}</p>
         <p className="mt-3 text-sm leading-relaxed text-setu-stone/80">{item.description}</p>
 
         {item.highlights?.length > 0 && (
@@ -197,7 +199,16 @@ export default function ImpactMap() {
   const [active, setActive] = useState(deployments[0])
   const [preview, setPreview] = useState(null)
   const [hoveredStateId, setHoveredStateId] = useState(null)
+  const [finePointer, setFinePointer] = useState(false)
   const statePaths = useMemo(() => getIndiaStatePaths(), [])
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)")
+    const update = () => setFinePointer(mq.matches)
+    update()
+    mq.addEventListener("change", update)
+    return () => mq.removeEventListener("change", update)
+  }, [])
 
   const deploymentsByState = useMemo(() => {
     const map = {}
@@ -220,17 +231,23 @@ export default function ImpactMap() {
         setActive(stateDeployments[0])
       }
       setPreview(null)
+      setHoveredStateId(stateId)
     },
     [active.id, deploymentsByState],
   )
 
-  const handleDeploymentHover = useCallback((deployment) => {
-    setPreview(deployment)
-    setHoveredStateId(deployment.stateId)
-  }, [])
+  const handleDeploymentHover = useCallback(
+    (deployment) => {
+      if (!finePointer) return
+      setPreview(deployment)
+      setHoveredStateId(deployment.stateId)
+    },
+    [finePointer],
+  )
 
   const handleStateHover = useCallback(
     (stateId) => {
+      if (!finePointer) return
       setHoveredStateId(stateId)
       const stateDeployments = deploymentsByState[stateId]
       if (stateDeployments?.length) {
@@ -239,7 +256,7 @@ export default function ImpactMap() {
         setPreview(null)
       }
     },
-    [deploymentsByState],
+    [deploymentsByState, finePointer],
   )
 
   const handleMapLeave = useCallback(() => {
@@ -255,26 +272,26 @@ export default function ImpactMap() {
   const hoveredDeployments = hoveredStateId ? deploymentsByState[hoveredStateId] : null
 
   return (
-    <section id="impact-map" className="bg-setu-teal-deep text-setu-cream">
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+    <section id="impact-map" className="overflow-x-hidden bg-setu-teal-deep text-setu-cream">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
         <FadeIn className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-setu-coral">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-setu-coral sm:text-sm">
             Our Reach
           </p>
-          <h2 className="mt-3 font-serif text-3xl font-normal sm:text-4xl lg:text-5xl">
+          <h2 className="mt-3 font-serif text-2xl font-normal sm:text-4xl lg:text-5xl">
             Impact across India
           </h2>
-          <p className="mt-4 text-lg text-setu-stone/80">
+          <p className="mt-3 text-base leading-relaxed text-setu-stone/80 sm:mt-4 sm:text-lg">
             From Sundargarh, Odisha to Pune, Maharashtra — preventive care at scale, powered by the
             SETU super app with 15+ health services nationwide.
           </p>
         </FadeIn>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-5">
-          <FadeIn className="lg:col-span-3">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-setu-stone/10 bg-setu-teal-dark/40 lg:aspect-auto lg:min-h-[480px]">
-              {hoveredState && (
-                <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-[calc(100%-2rem)] rounded-2xl bg-setu-teal-deep/95 px-4 py-3 text-setu-cream shadow-lg backdrop-blur-sm">
+        <div className="mt-10 grid gap-6 sm:mt-16 sm:gap-8 lg:grid-cols-5">
+          <FadeIn className="min-w-0 lg:col-span-3">
+            <div className="relative aspect-[5/4] min-h-[220px] overflow-hidden rounded-2xl border border-setu-stone/10 bg-setu-teal-dark/40 sm:aspect-[4/3] sm:rounded-3xl lg:aspect-auto lg:min-h-[480px]">
+              {hoveredState && finePointer && (
+                <div className="pointer-events-none absolute left-3 top-3 z-10 max-w-[calc(100%-1.5rem)] rounded-xl bg-setu-teal-deep/95 px-3 py-2.5 text-setu-cream shadow-lg backdrop-blur-sm sm:left-4 sm:top-4 sm:max-w-[calc(100%-2rem)] sm:rounded-2xl sm:px-4 sm:py-3">
                   <p className="text-sm font-semibold">{hoveredState.label}</p>
                   {hoveredDeployments?.length ? (
                     <>
@@ -301,9 +318,9 @@ export default function ImpactMap() {
 
               <svg
                 viewBox={`0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`}
-                className="h-full w-full p-4 sm:p-6"
+                className="h-full w-full max-w-full p-3 sm:p-4 lg:p-6"
                 aria-label="Map of India showing SETU deployment locations"
-                onMouseLeave={handleMapLeave}
+                onMouseLeave={finePointer ? handleMapLeave : undefined}
               >
                 <g id="india-states">
                   {statePaths.map((state) => {
@@ -331,7 +348,7 @@ export default function ImpactMap() {
                             ? "cursor-pointer hover:brightness-110"
                             : "cursor-default"
                         }`}
-                        onMouseEnter={() => handleStateHover(state.id)}
+                        onMouseEnter={finePointer ? () => handleStateHover(state.id) : undefined}
                         onClick={() => handleStateClick(state.id)}
                         onKeyDown={(e) => {
                           if (hasDeployment && (e.key === "Enter" || e.key === " ")) {
@@ -356,8 +373,9 @@ export default function ImpactMap() {
                       onClick={() => {
                         setActive(d)
                         setPreview(null)
+                        setHoveredStateId(d.stateId)
                       }}
-                      onMouseEnter={() => handleDeploymentHover(d)}
+                      onMouseEnter={finePointer ? () => handleDeploymentHover(d) : undefined}
                     >
                       {selected && (
                         <circle
@@ -396,25 +414,27 @@ export default function ImpactMap() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.15} className="lg:col-span-2">
-            <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-setu-stone/10 bg-setu-teal-dark/40 backdrop-blur-sm">
-              <AnimatePresence mode="wait">
-                {showPlatform ? (
-                  <DeploymentPanel key="platform" isPlatform />
-                ) : (
-                  <DeploymentPanel
-                    key={displayed.id}
-                    item={displayed}
-                    isPreview={Boolean(preview)}
-                  />
-                )}
-              </AnimatePresence>
+          <FadeIn delay={0.15} className="min-w-0 lg:col-span-2">
+            <div className="flex max-h-[min(78vh,680px)] flex-col overflow-hidden rounded-2xl border border-setu-stone/10 bg-setu-teal-dark/40 backdrop-blur-sm sm:rounded-3xl lg:max-h-none lg:min-h-[480px]">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-scroll">
+                <AnimatePresence mode="wait">
+                  {showPlatform ? (
+                    <DeploymentPanel key="platform" isPlatform />
+                  ) : (
+                    <DeploymentPanel
+                      key={displayed.id}
+                      item={displayed}
+                      isPreview={Boolean(preview)}
+                    />
+                  )}
+                </AnimatePresence>
+              </div>
 
-              <div className="border-t border-setu-stone/10 px-6 py-4 sm:px-8">
-                <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-setu-stone/50">
+              <div className="shrink-0 border-t border-setu-stone/10 px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-setu-stone/50">
                   Deployment locations
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {deployments.map((d) => (
                     <button
                       key={d.id}
@@ -422,9 +442,10 @@ export default function ImpactMap() {
                       onClick={() => {
                         setActive(d)
                         setPreview(null)
+                        setHoveredStateId(d.stateId)
                       }}
-                      onMouseEnter={() => handleDeploymentHover(d)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 ${
+                      onMouseEnter={finePointer ? () => handleDeploymentHover(d) : undefined}
+                      className={`tap-target rounded-full px-2.5 py-1.5 text-[11px] font-medium transition-all duration-300 sm:px-3 sm:text-xs ${
                         displayed.id === d.id && !showPlatform
                           ? "bg-setu-coral text-setu-teal-deep"
                           : "bg-setu-cream/10 text-setu-stone/70 hover:bg-setu-cream/20"

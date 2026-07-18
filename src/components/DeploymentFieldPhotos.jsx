@@ -130,10 +130,7 @@ function PhotoLightbox({ open, images, index, onClose, onChange }) {
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-setu-sand/50">
               All photos
             </p>
-            <div
-              ref={thumbStripRef}
-              className="touch-scroll flex gap-2 overflow-x-auto pb-1"
-            >
+            <div ref={thumbStripRef} className="touch-scroll flex gap-2 overflow-x-auto pb-1">
               {images.map((image, i) => (
                 <button
                   key={image.id}
@@ -166,11 +163,26 @@ function PhotoLightbox({ open, images, index, onClose, onChange }) {
   )
 }
 
+function useVisibleSlideCount() {
+  const [count, setCount] = useState(2)
+
+  useEffect(() => {
+    const update = () => {
+      setCount(window.innerWidth >= 640 ? 3 : 2)
+    }
+    update()
+    window.addEventListener("resize", update, { passive: true })
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
+  return count
+}
+
 export default function DeploymentFieldPhotos({ manifestUrl, title = "Field photos" }) {
   const [images, setImages] = useState([])
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const trackRef = useRef(null)
+  const visibleSlideCount = useVisibleSlideCount()
 
   useEffect(() => {
     if (!manifestUrl) return undefined
@@ -186,47 +198,20 @@ export default function DeploymentFieldPhotos({ manifestUrl, title = "Field phot
     }
   }, [manifestUrl])
 
-  const scrollToIndex = useCallback((index) => {
-    const track = trackRef.current
-    if (!track) return
-    const slide = track.querySelector("[data-slide]")
-    if (!slide) return
-    const gap = 8
-    const slideWidth = slide.getBoundingClientRect().width + gap
-    track.scrollTo({ left: index * slideWidth, behavior: "smooth" })
-    setActiveIndex(index)
-  }, [])
-
   const step = (direction) => {
-    const next = Math.max(0, Math.min(images.length - 1, activeIndex + direction))
-    scrollToIndex(next)
+    setActiveIndex((i) => Math.max(0, Math.min(images.length - 1, i + direction)))
   }
-
-  useEffect(() => {
-    const track = trackRef.current
-    if (!track || !images.length) return undefined
-
-    const onScroll = () => {
-      const slide = track.querySelector("[data-slide]")
-      if (!slide) return
-      const gap = 8
-      const slideWidth = slide.getBoundingClientRect().width + gap
-      const idx = Math.round(track.scrollLeft / slideWidth)
-      setActiveIndex(Math.max(0, Math.min(images.length - 1, idx)))
-    }
-
-    track.addEventListener("scroll", onScroll, { passive: true })
-    return () => track.removeEventListener("scroll", onScroll)
-  }, [images.length])
 
   const openLightbox = (index = 0) => setLightboxIndex(index)
 
   if (!images.length) return null
 
+  const slides = images.slice(activeIndex, activeIndex + visibleSlideCount)
+
   return (
-    <div className="mt-5 border-t border-setu-stone/10 pt-5">
-      <div className="flex items-end justify-between gap-3">
-        <div>
+    <div className="mt-4 border-t border-setu-stone/10 pt-4 sm:mt-5 sm:pt-5">
+      <div className="flex items-start justify-between gap-2 sm:items-end sm:gap-3">
+        <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-setu-stone/50">
             {title}
           </p>
@@ -235,52 +220,50 @@ export default function DeploymentFieldPhotos({ manifestUrl, title = "Field phot
         <button
           type="button"
           onClick={() => openLightbox(activeIndex)}
-          className="shrink-0 rounded-full border border-setu-coral/35 px-3 py-1.5 text-xs font-medium text-setu-coral transition hover:border-setu-coral hover:bg-setu-coral/10 hover:text-setu-beige"
+          className="tap-target shrink-0 rounded-full border border-setu-coral/35 px-2.5 py-1.5 text-[11px] font-medium text-setu-coral transition hover:border-setu-coral hover:bg-setu-coral/10 hover:text-setu-beige sm:px-3 sm:text-xs"
         >
           View all
         </button>
       </div>
 
-      <div className="relative mt-3">
+      <div className="mt-3 flex items-center gap-1.5 sm:gap-2">
         <button
           type="button"
           onClick={() => step(-1)}
           disabled={activeIndex <= 0}
-          className="tap-target absolute -left-1 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-setu-stone/20 bg-setu-teal-deep/95 text-setu-cream shadow-sm transition hover:border-setu-coral/50 disabled:pointer-events-none disabled:opacity-30 sm:-left-2 sm:h-9 sm:w-9"
+          className="tap-target flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-setu-stone/20 bg-setu-teal-deep/95 text-setu-cream transition hover:border-setu-coral/50 disabled:pointer-events-none disabled:opacity-30 sm:h-9 sm:w-9"
           aria-label="Previous photos"
         >
           <ChevronLeft size={18} />
         </button>
 
-        <div
-          ref={trackRef}
-          className="touch-scroll flex gap-2 overflow-x-auto scroll-smooth px-7 sm:px-8"
-          style={{ scrollSnapType: "x mandatory" }}
-        >
-          {images.map((image, i) => (
-            <button
-              key={image.id}
-              type="button"
-              data-slide
-              onClick={() => openLightbox(i)}
-              className="aspect-[4/3] w-[42%] shrink-0 snap-start overflow-hidden rounded-lg border border-setu-stone/15 transition hover:border-setu-coral/45 sm:w-[31%]"
-              aria-label={image.alt}
-            >
-              <OptimizedImage
-                src={image.thumb}
-                alt={image.alt}
-                sizes="120px"
-                className="h-full w-full object-cover"
-              />
-            </button>
-          ))}
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2">
+          {slides.map((image, offset) => {
+            const globalIndex = activeIndex + offset
+            return (
+              <button
+                key={image.id}
+                type="button"
+                onClick={() => openLightbox(globalIndex)}
+                className="aspect-[4/3] overflow-hidden rounded-lg border border-setu-stone/15 transition hover:border-setu-coral/45"
+                aria-label={image.alt}
+              >
+                <OptimizedImage
+                  src={image.thumb}
+                  alt={image.alt}
+                  sizes="(min-width: 640px) 120px, 45vw"
+                  className="h-full w-full object-cover"
+                />
+              </button>
+            )
+          })}
         </div>
 
         <button
           type="button"
           onClick={() => step(1)}
           disabled={activeIndex >= images.length - 1}
-          className="tap-target absolute -right-1 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-setu-stone/20 bg-setu-teal-deep/95 text-setu-cream shadow-sm transition hover:border-setu-coral/50 disabled:pointer-events-none disabled:opacity-30 sm:-right-2 sm:h-9 sm:w-9"
+          className="tap-target flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-setu-stone/20 bg-setu-teal-deep/95 text-setu-cream transition hover:border-setu-coral/50 disabled:pointer-events-none disabled:opacity-30 sm:h-9 sm:w-9"
           aria-label="Next photos"
         >
           <ChevronRight size={18} />
