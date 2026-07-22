@@ -16,7 +16,7 @@ on:
 
 concurrency:
   group: deploy-setuai-com
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -74,10 +74,12 @@ jobs:
           fi
           echo "FTP_SERVER=$server" >> "$GITHUB_ENV"
           echo "FTP_USERNAME=$user" >> "$GITHUB_ENV"
-          echo "FTP_PASSWORD<<EOF" >> "$GITHUB_ENV"
-          printf '%s' "$pass" >> "$GITHUB_ENV"
-          echo "" >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
+          {
+            echo "FTP_PASSWORD<<EOF"
+            printf '%s' "$pass"
+            echo
+            echo "EOF"
+          } >> "$GITHUB_ENV"
           echo "Prepared FTP credentials for user: $user @ $server"
 
       - name: Check required secrets
@@ -162,26 +164,38 @@ jobs:
           echo "Deploying $(find dist -type f | wc -l) files to public_html/setuai.com/"
           du -sh dist
 
-      - name: Deploy to GoDaddy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ env.FTP_SERVER }}
-          username: ${{ env.FTP_USERNAME }}
-          password: ${{ env.FTP_PASSWORD }}
-          port: 21
-          protocol: ftps
-          security: loose
-          local-dir: ./dist/
-          # Hardcoded — nkginternational.com uses public_html/ (must never deploy there)
-          server-dir: public_html/setuai.com/
-          dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/assets/public/khatima/originals/**
-            DEPLOY-CHECKLIST.txt
-          log-level: verbose
+      - name: Deploy to GoDaddy via FTPS
+        env:
+          CLEAN_SLATE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_slate == 'true' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y lftp
+          echo "Deploying dist/ → public_html/setuai.com/ (clean_slate=$CLEAN_SLATE)"
+          export HOME="$RUNNER_TEMP"
+          NETRC="$HOME/.netrc"
+          printf 'machine %s\nlogin %s\npassword %s\n' \
+            "$FTP_SERVER" "$FTP_USERNAME" "$FTP_PASSWORD" > "$NETRC"
+          chmod 600 "$NETRC"
+          DELETE_OPT=""
+          if [ "$CLEAN_SLATE" = "true" ]; then
+            DELETE_OPT="--delete"
+          fi
+          lftp "ftps://$FTP_SERVER:21" <<LFTP_EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set cmd:fail-exit yes
+          cd public_html/setuai.com
+          lcd ./dist
+          mirror -R --parallel=4 --verbose $DELETE_OPT \
+            --exclude-glob .git* \
+            --exclude-glob **/node_modules/** \
+            --exclude-glob **/assets/public/khatima/originals/** \
+            --exclude-glob DEPLOY-CHECKLIST.txt
+          bye
+          LFTP_EOF
+          rm -f "$NETRC"
+          echo "OK: FTPS upload finished"
 
       - name: Verify live site
         run: |
