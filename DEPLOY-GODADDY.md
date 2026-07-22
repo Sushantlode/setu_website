@@ -24,6 +24,8 @@ git push -u origin main
 
 ### 2. Add GitHub Secrets
 
+**Secrets do NOT copy** when you change GitHub repos or fork. After moving to `Sushantlode/setu_website`, re-add every secret below on the **new repo**.
+
 Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
 | Secret | Value | Required |

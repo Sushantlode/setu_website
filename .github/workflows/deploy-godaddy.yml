@@ -58,6 +58,28 @@ jobs:
           esac
           echo "OK: FTP_SERVER is set ($trimmed)"
 
+      - name: Prepare FTP credentials
+        env:
+          FTP_SERVER_RAW: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME_RAW: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD_RAW: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          trim() { printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
+          server=$(trim "$FTP_SERVER_RAW")
+          user=$(trim "$FTP_USERNAME_RAW")
+          pass=$(trim "$FTP_PASSWORD_RAW")
+          if [ -z "$server" ] || [ -z "$user" ] || [ -z "$pass" ]; then
+            echo "::error::FTP_SERVER, FTP_USERNAME, and FTP_PASSWORD must be non-empty"
+            exit 1
+          fi
+          echo "FTP_SERVER=$server" >> "$GITHUB_ENV"
+          echo "FTP_USERNAME=$user" >> "$GITHUB_ENV"
+          echo "FTP_PASSWORD<<EOF" >> "$GITHUB_ENV"
+          printf '%s' "$pass" >> "$GITHUB_ENV"
+          echo "" >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
+          echo "Prepared FTP credentials for user: $user @ $server"
+
       - name: Check required secrets
         run: |
           missing=0
@@ -83,16 +105,19 @@ jobs:
           fi
 
       - name: Test FTP login (setuai.com folder)
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           echo "Testing FTPS login and public_html/setuai.com access..."
-          curl -k --ssl-reqd --connect-timeout 30 --fail-with-body \
+          if ! curl -k --ssl-reqd --connect-timeout 30 --fail-with-body \
             --user "$FTP_USERNAME:$FTP_PASSWORD" \
             "ftp://$FTP_SERVER:21/public_html/setuai.com/" \
-            -l | head -10
+            -l | head -10; then
+            echo ""
+            echo "::error::FTP login failed (530). Fix GitHub Secrets on THIS repo:"
+            echo "  Settings → Secrets and variables → Actions"
+            echo "  Required: FTP_SERVER=184.168.116.6, FTP_USERNAME (cPanel login), FTP_PASSWORD (cPanel password)"
+            echo "  Secrets do NOT copy when you move or fork the repo — re-add them on Sushantlode/setu_website."
+            exit 1
+          fi
           echo "OK: FTP credentials work for public_html/setuai.com/"
 
       - name: Generate PHP config from secrets
@@ -140,9 +165,9 @@ jobs:
       - name: Deploy to GoDaddy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
           port: 21
           protocol: ftps
           security: loose
