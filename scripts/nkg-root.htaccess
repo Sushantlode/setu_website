@@ -1,0 +1,10 @@
+# nkginternational.com (public_html root) — NKG static site
+# SETU app routes redirect to setuai.com (addon domain)
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteRule ^login(/.*)?$ https://setuai.com/login$1 [R=301,L,NC]
+  RewriteRule ^register(/.*)?$ https://setuai.com/register$1 [R=301,L,NC]
+  RewriteRule ^app(/.*)?$ https://setuai.com/app$1 [R=301,L,NC]
+</IfModule>

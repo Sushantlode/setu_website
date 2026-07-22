@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { checkUserExists, fetchUserProfile } from "../api/auth"
+import { isJwtExpired, refreshVleToken } from "../api/roleAuth"
 
 const STORAGE_KEY = "setu_auth_session"
 
@@ -23,15 +24,36 @@ function writeStoredSession(session) {
 }
 
 function normalizeSession(payload) {
+  const accountType = payload.accountType || "user"
   return {
+    accountType,
     token: payload.token || "",
     refreshToken: payload.refreshToken || "",
     user_id: payload.user_id ? String(payload.user_id) : "",
     uhid: payload.uhid ? String(payload.uhid) : "",
     username: payload.username ? String(payload.username) : "",
     first_name: payload.first_name || "",
+    name: payload.name || payload.first_name || "",
     mobile: payload.mobile ? String(payload.mobile) : "",
+    email: payload.email || "",
+    vle_id: payload.vle_id ? String(payload.vle_id) : "",
+    vlePublicId: payload.vlePublicId || "",
+    admin_id: payload.admin_id ? String(payload.admin_id) : "",
+    roles: payload.roles || [],
+    scope: payload.scope || "",
+    allowedModules: payload.allowedModules || [],
   }
+}
+
+function sessionIsAuthenticated(session) {
+  if (!session?.token) return false
+  if (session.accountType === "vle") {
+    return Boolean(session.vle_id || session.vlePublicId)
+  }
+  if (session.accountType === "district_coordinator") {
+    return Boolean(session.admin_id)
+  }
+  return Boolean(session.user_id)
 }
 
 export function AuthProvider({ children }) {
@@ -59,13 +81,51 @@ export function AuthProvider({ children }) {
     })
   }, [])
 
-  /** Splash-equivalent: validate token + user_id via getUsers on boot */
+  /** Splash-equivalent: validate user sessions via getUsers; trust VLE/admin tokens on boot */
   useEffect(() => {
     let cancelled = false
 
     async function validate() {
       const stored = readStoredSession()
-      if (!stored?.token || !stored?.user_id) {
+      if (!stored?.token) {
+        if (!cancelled) {
+          setSession(null)
+          setLoading(false)
+          setBootChecked(true)
+        }
+        return
+      }
+
+      if (stored.accountType === "vle" || stored.accountType === "district_coordinator") {
+        let nextSession = normalizeSession(stored)
+        if (
+          stored.accountType === "vle" &&
+          stored.refreshToken &&
+          isJwtExpired(stored.token)
+        ) {
+          try {
+            const tokens = await refreshVleToken(stored.refreshToken)
+            nextSession = normalizeSession({ ...stored, ...tokens })
+          } catch {
+            if (!cancelled) {
+              setSession(null)
+              writeStoredSession(null)
+              setLoading(false)
+              setBootChecked(true)
+            }
+            return
+          }
+        }
+        if (!cancelled) {
+          setSession(nextSession)
+          writeStoredSession(nextSession)
+          setLoading(false)
+          setBootChecked(true)
+        }
+        return
+      }
+
+      if (!stored.user_id) {
         if (!cancelled) {
           setSession(null)
           setLoading(false)
@@ -99,6 +159,7 @@ export function AuthProvider({ children }) {
           if (!cancelled && profile) {
             const next = normalizeSession({
               ...stored,
+              accountType: "user",
               first_name: profile.first_name || stored.first_name,
               username: profile.username || stored.username,
               uhid: profile.uhid || stored.uhid,
@@ -168,7 +229,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(
     () => ({
       session,
-      isAuthenticated: Boolean(session?.token && session?.user_id),
+      isAuthenticated: sessionIsAuthenticated(session),
       loading,
       bootChecked,
       login,

@@ -43,7 +43,7 @@ export default function RegisterProfilePage() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       })
-      login(session)
+      login({ ...session, accountType: "user" })
       // Session is live — go straight into the web app. Never /register/complete.
       navigate("/app", { replace: true })
     } catch (err) {

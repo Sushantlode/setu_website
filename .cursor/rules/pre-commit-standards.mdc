@@ -1,0 +1,42 @@
+---
+description: Husky pre-commit oxlint and Conventional Commits — validate before user commits
+alwaysApply: true
+---
+
+# Pre-Commit Standards (Husky / lint-staged)
+
+Every code change must pass lint **before** the user commits. Treat lint failures as blocking bugs — fix them in the same task, not after a failed commit.
+
+## Before Finishing Any Task
+
+1. Run lint on **every file you created or modified**:
+   `npm run lint` or `npx oxlint <changed-files>`
+2. Run `npm run build` after substantive UI/API work.
+3. Do not commit `.env`, secrets, or credential files.
+
+## Lint (oxlint)
+
+- Fix errors in files you touched; do not leave parse errors or obvious unused imports in new code.
+- Match existing JSX/JS style in the file (imports, Tailwind tokens, component patterns).
+
+## Commit Messages (`.husky/commit-msg` + **commit-rabbit** skill)
+
+Format: `<type>(<scope>): <description>` (description 1–100 chars)
+
+```
+feat(vle): add wallet navbar layout matching app shell
+fix(auth): refresh VLE token before dashboard API calls
+chore(deps): upgrade vite to 8.1.1
+```
+
+Valid types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `test`, `perf`, `ci`, `build`, `revert`
+
+**Website scopes:** `vle`, `auth`, `wallet`, `app`, `login`, `reports`, `sos`, `mental`, `booktest`, `coordinator`, `vite`, `proxy`, `ui`, `deps`
+
+Use the **commit-rabbit** skill (`.cursor/skills/commit-rabbit/`) when drafting commit messages.
+
+## Do Not
+
+- Commit without lint-checking your own edits
+- Suggest commit messages that violate Conventional Commits
+- Expand scope beyond what the user asked (see `setu-website-standards.mdc`)

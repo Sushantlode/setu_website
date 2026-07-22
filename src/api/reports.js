@@ -10,7 +10,7 @@ import {
 } from "../config/api"
 import { authHeaders } from "./http"
 
-/** Storage-backed report art (same keys as Reports-Service seed / staging DB). */
+/** Storage-backed report art (same keys as Reports-Service / api.setuai.com). */
 export const reportAsset = (fileName) =>
   buildStorageObjectUrl(`Reports/public/${fileName}`)
 

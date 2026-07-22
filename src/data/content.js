@@ -25,10 +25,10 @@ const E = "/assets/enhanced"
 
 export const assets = {
   logo: `${S}/branding/setu-logo.png`,
-  favicon: "/favicon.png",
-  favicon16: "/favicon-16.png",
-  favicon48: "/favicon-48.png",
-  appleTouchIcon: `${S}/branding/apple-touch-icon.png`,
+  favicon: "/brand/setu-favicon-32.png",
+  favicon16: "/brand/setu-favicon-16.png",
+  favicon48: "/brand/setu-favicon-48.png",
+  appleTouchIcon: "/brand/setu-apple-touch-icon.png",
   heroFallback: `${E}/general/hero-fg.webp`,
   aboutImage: `${E}/general/about-team.webp`,
   aboutBanner: `${E}/services/preventive-ehealth-center.webp`,
@@ -61,7 +61,7 @@ export const assets = {
     matrujyoti: `${E}/projects/matrujyoti.webp`,
     nalanda: `${E}/projects/nalanda-preventive.webp`,
     khatima: `${E}/projects/khatima-checkups.webp`,
-    pune: `${E}/projects/pune-pmc-pilot.webp`,
+    pune: `${E}/projects/pune-pmc-pilot.webp?v=20260718`,
     portfolio: `${E}/projects/portfolio-4.webp`,
   },
   person: [

@@ -2,6 +2,7 @@
  * Book Test API — mirrors setuReactNative/src/Utils/api/bookTest.js
  */
 import { booktestUrl, apiUrl } from "../config/api"
+import { isAccessTokenExpired, refreshAuthTokens } from "./auth"
 import { authFetch } from "./http"
 
 export const RAZORPAY_KEY_ID =
@@ -28,7 +29,25 @@ function assertOk(response, data, fallback) {
   throw err
 }
 
-async function btFetch(path, { session, method = "GET", body, params } = {}) {
+function isAuthTokenError(message, status) {
+  if (status !== 401 && status !== 403) return false
+  const msg = String(message || "").toLowerCase()
+  return (
+    msg.includes("token") ||
+    msg.includes("jwt") ||
+    msg.includes("unauthorized") ||
+    msg.includes("forbidden") ||
+    msg.includes("session") ||
+    msg.includes("expired")
+  )
+}
+
+/**
+ * Book Test protected routes use validateUser middleware. Do not send x-refresh-token
+ * to Book Test — it tries local JWT refresh with service secrets that differ from
+ * Auth, which surfaces as "jwt malformed". Refresh via Auth and retry instead.
+ */
+async function btFetch(path, { session, method = "GET", body, params, auth = false } = {}) {
   let url = booktestUrl(path)
   if (params && typeof params === "object") {
     const qs = new URLSearchParams()
@@ -38,12 +57,37 @@ async function btFetch(path, { session, method = "GET", body, params } = {}) {
     const s = qs.toString()
     if (s) url += `?${s}`
   }
-  const { response, data } = await authFetch(url, {
-    method,
-    token: session?.token,
-    refreshToken: session?.refreshToken,
-    body: body != null ? JSON.stringify(body) : undefined,
-  })
+
+  const run = (token) =>
+    authFetch(url, {
+      method,
+      token,
+      body: body != null ? JSON.stringify(body) : undefined,
+    })
+
+  if (auth && !session?.token) {
+    throw new Error("Please sign in again.")
+  }
+
+  let token = session?.token
+  if (auth && token && isAccessTokenExpired(token)) {
+    const tokens = await refreshAuthTokens(session.refreshToken)
+    token = tokens.token
+  }
+
+  let { response, data } = await run(token)
+
+  if (auth && !response.ok && isAuthTokenError(data?.message, response.status)) {
+    try {
+      const tokens = await refreshAuthTokens(session.refreshToken)
+      ;({ response, data } = await run(tokens.token))
+    } catch (refreshErr) {
+      throw new Error(
+        refreshErr?.message || data?.message || "Session expired. Please sign in again.",
+      )
+    }
+  }
+
   return { response, data }
 }
 
@@ -148,6 +192,7 @@ export async function searchBookTests(session, searchInput) {
 export async function fetchPackageDetails(session, { userId, code }) {
   const { response, data } = await btFetch("/packageDetails", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId, code },
   })
@@ -158,6 +203,7 @@ export async function fetchPackageDetails(session, { userId, code }) {
 export async function fetchSimilarPackages(session, { userId, code }) {
   const { response, data } = await btFetch("/similarpackages", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId, code },
   })
@@ -169,6 +215,7 @@ export async function fetchSimilarPackages(session, { userId, code }) {
 export async function addToCart(session, { userId, productCode, quantity = 1 }) {
   const { response, data } = await btFetch("/cart/add", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId, productCode, quantity },
   })
@@ -179,6 +226,7 @@ export async function addToCart(session, { userId, productCode, quantity = 1 }) 
 export async function fetchCartDetails(session, userId) {
   const { response, data } = await btFetch("/cart/details", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId },
   })
@@ -189,6 +237,7 @@ export async function fetchCartDetails(session, userId) {
 export async function removeFromCart(session, { userId, productCode }) {
   const { response, data } = await btFetch("/cart/remove", {
     session,
+    auth: true,
     method: "DELETE",
     body: { user_id: userId, productCode },
   })
@@ -210,6 +259,7 @@ export async function checkPincode(session, pincode) {
 export async function listAddresses(session, userId) {
   const { response, data } = await btFetch("/listAddresses", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId },
   })
@@ -221,6 +271,7 @@ export async function listAddresses(session, userId) {
 export async function addAddress(session, payload) {
   const { response, data } = await btFetch("/addAddress", {
     session,
+    auth: true,
     method: "POST",
     body: payload,
   })
@@ -231,6 +282,7 @@ export async function addAddress(session, payload) {
 export async function setDefaultAddress(session, { userId, addressId }) {
   const { response, data } = await btFetch("/updateAddress", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId, addressId },
   })
@@ -241,6 +293,7 @@ export async function setDefaultAddress(session, { userId, addressId }) {
 export async function deleteAddress(session, { userId, addressId }) {
   const { response, data } = await btFetch("/deleteAddress", {
     session,
+    auth: true,
     method: "DELETE",
     body: { user_id: userId, addressId },
   })
@@ -251,6 +304,7 @@ export async function deleteAddress(session, { userId, addressId }) {
 export async function fetchSlotDetails(session, userId) {
   const { response, data } = await btFetch("/slotdetails", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId },
   })
@@ -261,6 +315,7 @@ export async function fetchSlotDetails(session, userId) {
 export async function fetchAppointmentSlots(session, payload) {
   const { response, data } = await btFetch("/appointment-slots", {
     session,
+    auth: true,
     method: "POST",
     body: payload,
   })
@@ -272,6 +327,7 @@ export async function fetchAppointmentSlots(session, payload) {
 export async function bookAppointmentSlot(session, payload) {
   const { response, data } = await btFetch("/bookAppointmentSlot", {
     session,
+    auth: true,
     method: "POST",
     body: payload,
   })
@@ -282,6 +338,7 @@ export async function bookAppointmentSlot(session, payload) {
 export async function fetchCheckout(session, userId) {
   const { response, data } = await btFetch("/checkout", {
     session,
+    auth: true,
     method: "POST",
     body: { user_id: userId },
   })
@@ -303,6 +360,7 @@ export async function verifyBookTestPayment(session, { userId, paymentId }) {
 export async function createThyrocareOrder(session, payload) {
   const { response, data } = await btFetch("/thyrocare/orders", {
     session,
+    auth: true,
     method: "POST",
     body: payload,
   })
@@ -314,6 +372,7 @@ export async function fetchOrderList(session, { page = 1, limit = 20, orderId } 
   const body = orderId ? { orderId } : { page, limit }
   const { response, data } = await btFetch("/orderlist", {
     session,
+    auth: true,
     method: "POST",
     body,
   })
@@ -333,7 +392,7 @@ export async function fetchThyrocareOrderDetails(
 ) {
   const { response, data } = await btFetch(
     `/thyrocare/orders/${encodeURIComponent(String(orderId))}`,
-    { session, params: { include } },
+    { session, auth: true, params: { include } },
   )
   assertOk(response, data, "Could not load order details")
   return data
@@ -344,6 +403,7 @@ export async function cancelThyrocareOrder(session, orderId, payload = {}) {
     `/thyrocare/orders/${encodeURIComponent(String(orderId))}/cancel`,
     {
       session,
+      auth: true,
       method: "POST",
       body: {
         reasonKey: "OTHER",
@@ -360,7 +420,7 @@ export async function cancelThyrocareOrder(session, orderId, payload = {}) {
 export async function rescheduleThyrocareOrder(session, orderId, payload) {
   const { response, data } = await btFetch(
     `/thyrocare/orders/${encodeURIComponent(String(orderId))}/reschedule`,
-    { session, method: "POST", body: payload },
+    { session, auth: true, method: "POST", body: payload },
   )
   assertOk(response, data, "Could not reschedule order")
   return unwrap(data) || data
@@ -369,6 +429,7 @@ export async function rescheduleThyrocareOrder(session, orderId, payload) {
 export async function saveForLater(session, productCode) {
   const { response, data } = await btFetch("/saved-for-later/save", {
     session,
+    auth: true,
     method: "POST",
     body: { product_code: productCode },
   })
@@ -377,7 +438,7 @@ export async function saveForLater(session, productCode) {
 }
 
 export async function listSavedForLater(session) {
-  const { response, data } = await btFetch("/saved-for-later/list", { session })
+  const { response, data } = await btFetch("/saved-for-later/list", { session, auth: true })
   assertOk(response, data, "Could not load saved packages")
   const raw = unwrap(data)
   return raw?.items || raw?.saved || (Array.isArray(raw) ? raw : [])
@@ -386,6 +447,7 @@ export async function listSavedForLater(session) {
 export async function removeSavedForLater(session, productCode) {
   const { response, data } = await btFetch("/saved-for-later/remove", {
     session,
+    auth: true,
     method: "DELETE",
     params: { product_code: productCode },
   })

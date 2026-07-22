@@ -77,7 +77,10 @@ $configPath = __DIR__ . "/config.php";
 if (is_file($configPath)) {
     $config = require $configPath;
     if (is_array($config) && !empty($config["staging_api_base"])) {
-        $upstreamBase = rtrim((string) $config["staging_api_base"], "/");
+        // Do not override production assets host — staging lacks Reports/public keys.
+        if (!str_starts_with($requestPath, "assets/api")) {
+            $upstreamBase = rtrim((string) $config["staging_api_base"], "/");
+        }
     }
 }
 

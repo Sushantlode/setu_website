@@ -3,6 +3,13 @@ import MarketingPage from "./pages/MarketingPage"
 import LoginPage from "./pages/LoginPage"
 import RegisterProfilePage from "./pages/RegisterProfilePage"
 import RegisterCompletePage from "./pages/RegisterCompletePage"
+import VleDashboardPage from "./pages/vle/VleDashboardPage"
+import VleRegisterUserPage from "./pages/vle/VleRegisterUserPage"
+import VleWalletPage from "./pages/vle/VleWalletPage"
+import VleLeaderboardPage from "./pages/vle/VleLeaderboardPage"
+import VleLayout from "./layouts/VleLayout"
+import CoordinatorDashboardPage from "./pages/coordinator/CoordinatorDashboardPage"
+import RoleProtectedRoute from "./components/RoleProtectedRoute"
 import AppLayout from "./layouts/AppLayout"
 import AppDashboard from "./pages/AppDashboard"
 import ModulePage from "./pages/ModulePage"
@@ -154,6 +161,28 @@ export default function App() {
       <Route path="/register" element={<LoginPage />} />
       <Route path="/register/profile" element={<RegisterProfilePage />} />
       <Route path="/register/complete" element={<RegisterCompletePage />} />
+
+      <Route
+        path="/vle"
+        element={
+          <RoleProtectedRoute allow="vle">
+            <VleLayout />
+          </RoleProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<VleDashboardPage />} />
+        <Route path="wallet" element={<VleWalletPage />} />
+        <Route path="register-user" element={<VleRegisterUserPage />} />
+        <Route path="leaderboard" element={<VleLeaderboardPage />} />
+      </Route>
+      <Route
+        path="/coordinator/dashboard"
+        element={
+          <RoleProtectedRoute allow="district_coordinator">
+            <CoordinatorDashboardPage />
+          </RoleProtectedRoute>
+        }
+      />
 
       <Route
         path="/app"

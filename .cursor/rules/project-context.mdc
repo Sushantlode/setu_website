@@ -1,0 +1,50 @@
+---
+description: SETU website context — React/Vite app, RN parity, auth proxy, VLE portal
+alwaysApply: true
+---
+
+# SETU Website — Engineering Context
+
+## Stack
+
+- **React 19 + Vite 8** — `setu_website/`
+- **Tailwind CSS 4** — design tokens (`setu-*`, `#1C39BB` brand blue)
+- **Express** mini API — `server/index.js` (contact form); most data via proxied backend services
+- **Parity target:** `setuReactNative` screens and API clients
+
+## Architecture
+
+- **Marketing:** `/` — public landing
+- **Auth:** `/login`, `/register/*` — OTP user, VLE ID+password, district coordinator
+- **App shell:** `/app/*` — logged-in user (AppLayout)
+- **VLE portal:** `/vle/*` — VLELayout (dashboard, register user, wallet, leaderboard)
+- **API proxy:** Vite dev proxy + `public/api/staging-proxy.php` — prefixes `/auth`, `/jobs`, etc.
+
+## Auth
+
+- Session in `AuthContext` + `localStorage` (`setu_auth_session`)
+- SETU-AUTH refresh via `/auth/refreshToken` only
+- VLE tokens: separate JWT + refresh in `src/api/roleAuth.js`
+- Never hardcode staging/production API hosts in pages — use `src/config/api.js`
+
+## Key Paths
+
+| Area | Path |
+|------|------|
+| Routes | `src/App.jsx` |
+| API clients | `src/api/*.js` |
+| VLE pages | `src/pages/vle/` |
+| Layouts | `src/layouts/` |
+| Proxy config | `vite.config.js`, `.env` (`VITE_PROXY_*`) |
+
+## Local Dev
+
+- Website: `npm run dev` → `:5173`
+- SETU-AUTH local: `VITE_PROXY_AUTH_HOST=http://localhost:7005` in `.env`
+- Gateway path: `/auth/api/vle/...` → SETU-AUTH `/api/vle/...`
+
+## Team Standards
+
+- Implement only what was asked; match RN behaviour before inventing UX
+- Run `npm run build` before claiming UI work is done
+- Conventional Commits enforced by Husky — see `CONTRIBUTING.md`

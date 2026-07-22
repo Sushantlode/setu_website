@@ -71,6 +71,11 @@ export const PREVENTIVE_BASE = serviceBase(
 /** Assets / storage — RN: API_URL_ASSETS */
 export const ASSETS_BASE = serviceBase("VITE_ASSETS_BASE", "/assets")
 
+/** Production storage host — API returns https://api.setuai.com/assets/api/v1/storage/object?... */
+export const ASSETS_API_ORIGIN = trim(
+  import.meta.env.VITE_ASSETS_API_HOST || "https://api.setuai.com",
+)
+
 /** CloudFront CDN — RN: API_URL_CLOUDFRONT */
 export const CLOUDFRONT_BASE = trim(
   import.meta.env.VITE_CLOUDFRONT_BASE || "https://d10pnqyli54qno.cloudfront.net",
@@ -84,6 +89,16 @@ function joinUrl(base, path) {
 
 export function authUrl(path) {
   return joinUrl(AUTH_BASE, path)
+}
+
+/** VLE portal — SETU-AUTH /api/vle (via gateway: /auth/api/vle) */
+export function vleUrl(path) {
+  return joinUrl(AUTH_BASE, `/api/vle${path.startsWith("/") ? path : `/${path}`}`)
+}
+
+/** Admin RBAC — SETU-AUTH /api/auth (via gateway: /auth/api/auth) */
+export function adminAuthUrl(path) {
+  return joinUrl(AUTH_BASE, `/api/auth${path.startsWith("/") ? path : `/${path}`}`)
 }
 
 export function apiUrl(path) {
@@ -152,14 +167,26 @@ export function buildStorageObjectUrl(fileKey, contentType = "image/png") {
   )}&disposition=inline&contentType=${encodeURIComponent(contentType)}`
 }
 
+/** Upstream URL exactly as Reports API returns (api.setuai.com, not setuai.com or staging). */
+export function storageObjectUrlAbsolute(fileKey, contentType = "image/png") {
+  return `${ASSETS_API_ORIGIN}/assets/api/v1/storage/object?key=${encodeURIComponent(
+    fileKey,
+  )}&disposition=inline&contentType=${encodeURIComponent(contentType)}`
+}
+
 /**
- * Rewrite remote SETU storage URLs to same-origin `/assets/api/...` so images load
- * in the browser (api.setuai.com sets Cross-Origin-Resource-Policy: same-origin).
+ * Rewrite storage URLs for browser `<img>` tags.
+ * API returns https://api.setuai.com/assets/api/v1/storage/object?key=...
+ * Browser loads same-origin /assets/api/v1/storage/object?key=... (Vite / .htaccess
+ * proxy forwards to api.setuai.com — staging.setuai.com lacks Reports/public keys).
  */
 export function resolveStorageImageUrl(url) {
   if (url == null || url === "") return ""
   const raw = String(url).trim()
   if (!raw) return ""
+
+  const toProxiedStoragePath = (key, contentType = "image/png") =>
+    buildStorageObjectUrl(key, contentType)
 
   if (raw.startsWith("/assets/api/")) return raw
 
@@ -170,10 +197,8 @@ export function resolveStorageImageUrl(url) {
     )
     if (parsed.pathname.includes("/assets/api/v1/storage/object")) {
       const key = parsed.searchParams.get("key")
-      if (key) {
-        const contentType = parsed.searchParams.get("contentType") || "image/png"
-        return buildStorageObjectUrl(key, contentType)
-      }
+      const contentType = parsed.searchParams.get("contentType") || "image/png"
+      if (key) return toProxiedStoragePath(key, contentType)
       return `${parsed.pathname}${parsed.search}`
     }
   } catch {
@@ -182,11 +207,11 @@ export function resolveStorageImageUrl(url) {
 
   const cf = raw.match(/cloudfront\.net\/Reports\/public\/(.+)$/i)
   if (cf?.[1]) {
-    return buildStorageObjectUrl(`Reports/public/${decodeURIComponent(cf[1])}`)
+    return toProxiedStoragePath(`Reports/public/${decodeURIComponent(cf[1])}`)
   }
 
   if (raw.startsWith("Reports/public/")) {
-    return buildStorageObjectUrl(raw)
+    return toProxiedStoragePath(raw)
   }
 
   return raw
